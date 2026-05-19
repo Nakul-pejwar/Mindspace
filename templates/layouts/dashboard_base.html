@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block body %}
+    {% include "includes/sidebar.html" %}
+
+        <main class="ml-[240px] min-h-screen bg-gray-50 px-6 py-6">
+            {% include "includes/messages.html" %}
+            {% block content %}{% endblock %}
+        </main>
+{% endblock %}

@@ -1,0 +1,77 @@
+@media (max-width: 1280px) {
+    .dashboard-page {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-right {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 1024px) {
+    .dashboard-topbar {
+        flex-direction: column;
+    }
+
+    .topbar-actions {
+        width: 100%;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .activity-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    main {
+        margin-left: 0 !important;
+        padding: 20px !important;
+    }
+
+    .dashboard-page {
+        gap: 20px;
+    }
+
+    .activity-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-right {
+        grid-template-columns: 1fr;
+    }
+
+    .wellness-tip-card {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 520px) {
+    main {
+        padding: 16px !important;
+    }
+
+    .dashboard-topbar h1 {
+        font-size: 24px;
+    }
+
+    .welcome-banner {
+        padding: 24px;
+    }
+
+    .banner-content h2 {
+        font-size: 26px;
+    }
+
+    .banner-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+
+/* ## Responsive styles for dashboard page */

@@ -1,0 +1,667 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Learn More – MindSpace</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(215,228,201,.75), transparent 28%),
+        radial-gradient(circle at 90% 15%, rgba(178,223,219,.55), transparent 30%),
+        #f7fbf8;
+      color: #10231f;
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    .header {
+      height: 72px;
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(18px, 5vw, 72px);
+      background: rgba(255,255,255,.76);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(17,58,54,.08);
+    }
+
+    .logo {
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 800;
+      color: #113a36;
+      letter-spacing: -1px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 34px;
+      align-items: center;
+    }
+
+    .nav a {
+      font-size: 15px;
+      font-weight: 700;
+      color: #40544f;
+    }
+
+    .nav a:hover {
+      color: #113a36;
+    }
+
+    .small-btn {
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: #113a36;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .learn-page {
+      min-height: 100dvh;
+      padding: 120px clamp(18px, 5vw, 72px) 70px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .learn-page::before,
+    .learn-page::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(8px);
+      opacity: .45;
+      animation: float 7s ease-in-out infinite;
+    }
+
+    .learn-page::before {
+      width: 250px;
+      height: 250px;
+      background: #bce8ae;
+      right: 7%;
+      top: 14%;
+    }
+
+    .learn-page::after {
+      width: 180px;
+      height: 180px;
+      background: #b2dfdb;
+      left: 5%;
+      bottom: 10%;
+      animation-delay: 1.5s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .hero {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      align-items: center;
+      gap: 50px;
+      width: min(100%, 1120px);
+      margin: 0 auto 70px;
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(17,58,54,.12);
+      color: #2d5a45;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 6vw, 68px);
+      line-height: 1.05;
+      letter-spacing: -2px;
+      color: #0d2b23;
+      margin-bottom: 18px;
+    }
+
+    .hero p {
+      font-size: clamp(15px, 2vw, 18px);
+      line-height: 1.8;
+      color: #526660;
+      max-width: 620px;
+      margin-bottom: 30px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      min-height: 54px;
+      padding: 0 28px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      transition: .25s ease;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, #113a36, #2d5a45);
+      color: white;
+      box-shadow: 0 20px 42px rgba(17,58,54,.25);
+    }
+
+    .secondary-btn {
+      background: rgba(255,255,255,.72);
+      color: #113a36;
+      border: 1px solid rgba(17,58,54,.14);
+    }
+
+    .primary-btn:hover,
+    .secondary-btn:hover {
+      transform: translateY(-3px);
+    }
+
+    .visual-card {
+      padding: 28px;
+      border-radius: 34px;
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,.85);
+      box-shadow: 0 28px 90px rgba(17,58,54,.16);
+    }
+
+    .insight-box {
+      border-radius: 26px;
+      padding: 26px;
+      background: linear-gradient(135deg, #113a36, #2d5a45);
+      color: white;
+    }
+
+    .insight-box h3 {
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .metric {
+      margin-top: 22px;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.13);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
+    .metric strong {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .bar {
+      height: 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.18);
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: 78%;
+      background: #bce8ae;
+      border-radius: inherit;
+    }
+
+    .section {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 1120px);
+      margin: 0 auto 70px;
+    }
+
+    .section-title {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 40px;
+    }
+
+    .section-title span {
+      color: #2d5a45;
+      font-weight: 800;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    .section-title h2 {
+      margin-top: 12px;
+      font-size: clamp(28px, 5vw, 46px);
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .card {
+      padding: 30px;
+      border-radius: 28px;
+      background: rgba(255,255,255,.82);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,.85);
+      box-shadow: 0 24px 70px rgba(17,58,54,.11);
+      transition: .25s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+    }
+
+    .icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #d7e4c9, #b2dfdb);
+      font-size: 28px;
+      margin-bottom: 22px;
+    }
+
+    .card h3 {
+      font-size: 21px;
+      color: #113a36;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: #526660;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 18px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 18px;
+      padding: 24px;
+      border-radius: 26px;
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(255,255,255,.85);
+      box-shadow: 0 20px 60px rgba(17,58,54,.08);
+    }
+
+    .num {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      background: #113a36;
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+
+    .step h3 {
+      color: #113a36;
+      margin-bottom: 6px;
+    }
+
+    .step p {
+      color: #526660;
+      line-height: 1.7;
+    }
+
+    .cta {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 960px);
+      margin: 0 auto;
+      text-align: center;
+      padding: clamp(34px, 6vw, 60px);
+      border-radius: 36px;
+      background:
+        radial-gradient(circle at top left, rgba(188,232,174,.35), transparent 35%),
+        linear-gradient(135deg, #113a36, #2d5a45);
+      color: white;
+      box-shadow: 0 28px 90px rgba(17,58,54,.22);
+    }
+
+    .cta h2 {
+      font-size: clamp(28px, 5vw, 46px);
+      line-height: 1.15;
+      margin-bottom: 14px;
+      letter-spacing: -1px;
+    }
+
+    .cta p {
+      color: rgba(255,255,255,.76);
+      line-height: 1.7;
+      margin-bottom: 26px;
+    }
+
+    .cta .primary-btn {
+      background: white;
+      color: #113a36;
+      box-shadow: none;
+    }
+
+    .footer {
+      background: #071b18;
+      color: white;
+      padding: 50px clamp(18px, 5vw, 72px);
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 42px;
+    }
+
+    .footer h3 {
+      font-size: 28px;
+      margin-bottom: 14px;
+    }
+
+    .footer p,
+    .footer a {
+      color: rgba(255,255,255,.68);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .footer-links {
+      display: grid;
+      gap: 10px;
+    }
+
+    .newsletter input {
+      height: 44px;
+      width: 260px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      color: white;
+      padding: 0 16px;
+      outline: none;
+    }
+
+    .hamburger {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      flex-direction: column;
+      gap: 5px;
+      justify-content: center;
+    }
+
+    .hamburger span {
+      width: 26px;
+      height: 3px;
+      background: #113a36;
+      border-radius: 99px;
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero p {
+        margin-inline: auto;
+      }
+
+      .actions {
+        justify-content: center;
+      }
+
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .footer {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .header {
+        height: 64px;
+      }
+
+      .nav {
+        position: fixed;
+        inset: 64px 0 auto 0;
+        flex-direction: column;
+        align-items: center;
+        background: rgba(255,255,255,.96);
+        backdrop-filter: blur(18px);
+        border-bottom: 1px solid rgba(17,58,54,.1);
+        padding: 26px;
+        transform: translateY(-130%);
+        transition: .3s ease;
+      }
+
+      .nav.open {
+        transform: translateY(0);
+      }
+
+      .small-btn {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .learn-page {
+        padding-top: 100px;
+      }
+
+      .primary-btn,
+      .secondary-btn {
+        width: 100%;
+      }
+
+      .step {
+        grid-template-columns: 1fr;
+      }
+
+      .footer {
+        text-align: center;
+      }
+
+      .newsletter input {
+        width: 100%;
+      }
+    }
+  </style>
+  <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+</head>
+
+<body>
+
+<header class="header">
+  <a href="{% url 'landing' %}" class="logo">MindSpace</a>
+
+  <nav class="nav" id="mainNav">
+    <a href="{% url 'landing' %}">Home</a>
+    <a href="{% url 'support' %}">Support</a>
+    <a href="{% url 'contact' %}">Contact</a>
+  </nav>
+
+  <a href="{% url 'signup' %}" class="small-btn">Start Free</a>
+
+  <button class="hamburger" id="hamburger" aria-label="Open menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</header>
+
+<main class="learn-page">
+
+  <section class="hero">
+    <div>
+      <div class="badge">Learn More</div>
+      <h1>Built to help you understand your mind better.</h1>
+      <p>
+        MindSpace combines simple check-ins, mood tracking, habit insights,
+        and AI-powered reflection to help users build better emotional awareness.
+      </p>
+
+      <div class="actions">
+        <a href="{% url 'signup' %}" class="primary-btn">Start Your Journey →</a>
+        <a href="{% url 'support' %}" class="secondary-btn">Visit Support</a>
+      </div>
+    </div>
+
+    <div class="visual-card">
+      <div class="insight-box">
+        <h3>Today’s AI Insight</h3>
+        <p>Your sleep quality and screen time may be affecting your mood balance this week.</p>
+
+        <div class="metric">
+          <strong><span>Mood Balance</span><span>78%</span></strong>
+          <div class="bar"><span></span></div>
+        </div>
+
+        <div class="metric">
+          <strong><span>Stress Level</span><span>Low</span></strong>
+          <div class="bar"><span style="width:36%"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <span>What MindSpace Does</span>
+      <h2>A calm digital space for daily well-being</h2>
+    </div>
+
+    <div class="grid-3">
+      <article class="card">
+        <div class="icon">🧠</div>
+        <h3>Understand Patterns</h3>
+        <p>Track your mood, habits, sleep, and daily reflections to discover patterns over time.</p>
+      </article>
+
+      <article class="card">
+        <div class="icon">💬</div>
+        <h3>AI Reflections</h3>
+        <p>Get gentle, personalized prompts that help you reflect without feeling judged.</p>
+      </article>
+
+      <article class="card">
+        <div class="icon">📈</div>
+        <h3>Progress Tracking</h3>
+        <p>View your growth through simple visual insights that make progress easier to understand.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <span>How It Works</span>
+      <h2>Simple steps, clear results</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <div>
+          <h3>Create your account</h3>
+          <p>Sign up, verify your email, and complete your consent step before using the platform.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div>
+          <h3>Check in daily</h3>
+          <p>Share how you feel, record simple reflections, and track your habits over time.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">3</div>
+        <div>
+          <h3>Receive insights</h3>
+          <p>MindSpace helps you notice trends and suggests small actions for better clarity.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Start building emotional clarity today.</h2>
+    <p>
+      Your well-being does not need to feel complicated. Start with small check-ins,
+      simple insights, and better awareness.
+    </p>
+    <a href="{% url 'signup' %}" class="primary-btn">Get Started Free</a>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div>
+    <h3>MindSpace</h3>
+    <p>Copyright © 2026 MindSpace AI.<br>All rights reserved.</p>
+  </div>
+
+  <div class="footer-links">
+    <strong>Support</strong>
+    <a href="{% url 'support' %}">Help Center</a>
+    <a href="{% url 'support' %}">Terms of Service</a>
+    <a href="{% url 'support' %}">Privacy Policy</a>
+  </div>
+
+  <div class="newsletter">
+    <strong>Stay up to date</strong><br><br>
+    <input type="email" placeholder="your@email.com">
+  </div>
+</footer>
+
+<script>
+  const hamburger = document.getElementById("hamburger");
+  const nav = document.getElementById("mainNav");
+
+  hamburger.addEventListener("click", () => {
+    nav.classList.toggle("open");
+  });
+</script>
+
+</body>
+</html>

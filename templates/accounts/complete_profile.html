@@ -1,0 +1,593 @@
+{% extends "layouts/dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Complete Profile | MindSpace{% endblock %}
+
+{% block content %}
+
+<style>
+.profile-page {
+    min-height: calc(100vh - 40px);
+    padding: 18px;
+    background: linear-gradient(135deg, #f6fbf8 0%, #eef8f2 48%, #f8fafc 100%);
+}
+
+.profile-header {
+    max-width: 980px;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.profile-header h1 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.1;
+    font-weight: 900;
+    color: #12372a;
+}
+
+.profile-header p {
+    margin: 7px 0 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.profile-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 9px 13px;
+    background: #ecfdf5;
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    color: #047857;
+    font-weight: 800;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.profile-card {
+    max-width: 980px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.94);
+    border: 1px solid rgba(16, 185, 129, 0.14);
+    border-radius: 26px;
+    padding: 22px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
+.step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.step-dot {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: #e2e8f0;
+    color: #64748b;
+    font-weight: 900;
+}
+
+.step-dot.active {
+    background: #10b981;
+    color: #ffffff;
+}
+
+.step-line {
+    width: 100px;
+    height: 3px;
+    border-radius: 999px;
+    background: #dbeafe;
+}
+
+.form-step {
+    display: none;
+}
+
+.form-step.active {
+    display: block;
+}
+
+.section-title {
+    margin-bottom: 16px;
+}
+
+.section-title h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #12372a;
+    font-weight: 900;
+}
+
+.section-title p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.avatar-box {
+    margin-bottom: 18px;
+    padding: 16px;
+    border-radius: 22px;
+    background: #f8fffb;
+    border: 1px solid rgba(16, 185, 129, 0.16);
+}
+
+.avatar-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.avatar-top h3 {
+    margin: 0;
+    color: #12372a;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.avatar-top p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(72px, 1fr));
+    gap: 11px;
+}
+
+.avatar-option {
+    position: relative;
+    cursor: pointer;
+}
+
+.avatar-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.avatar-card {
+    min-height: 104px;
+    border: 2px solid #e2e8f0;
+    border-radius: 18px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.18s ease;
+}
+
+.avatar-card img {
+    width: 62px;
+    height: 62px;
+    border-radius: 999px;
+    object-fit: cover;
+    background: #ecfdf5;
+}
+
+.avatar-card span {
+    font-size: 12px;
+    font-weight: 800;
+    color: #64748b;
+}
+
+.avatar-option input:checked + .avatar-card {
+    border-color: #10b981;
+    background: #ecfdf5;
+    box-shadow: 0 10px 24px rgba(16, 185, 129, 0.18);
+    transform: translateY(-2px);
+}
+
+.avatar-option input:checked + .avatar-card span {
+    color: #047857;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 13px;
+    color: #334155;
+    font-weight: 800;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    border: 1px solid #dbe4ee;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 11px 13px;
+    color: #0f172a;
+    outline: none;
+    font-size: 14px;
+}
+
+.form-group input[readonly] {
+    background: #f8fafc;
+    color: #64748b;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+}
+
+.help-text {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.form-actions.between {
+    justify-content: space-between;
+}
+
+.btn-primary,
+.btn-secondary {
+    border: none;
+    border-radius: 999px;
+    padding: 11px 18px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-primary {
+    background: #10b981;
+    color: #ffffff;
+    box-shadow: 0 12px 24px rgba(16, 185, 129, 0.22);
+}
+
+.btn-primary:hover {
+    background: #059669;
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.btn-secondary:hover {
+    background: #cbd5e1;
+}
+
+@media (max-width: 980px) {
+    .avatar-grid {
+        grid-template-columns: repeat(4, minmax(72px, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .profile-page {
+        padding: 12px;
+    }
+
+    .profile-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .profile-card {
+        padding: 16px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .avatar-grid {
+        grid-template-columns: repeat(2, minmax(72px, 1fr));
+    }
+
+    .avatar-top {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .step-line {
+        width: 60px;
+    }
+}
+</style>
+
+<div class="profile-page">
+
+    <div class="profile-header">
+        <div>
+            <h1>Complete Your Profile</h1>
+            <p>Select your avatar and add the basic details needed for your MindSpace account.</p>
+        </div>
+        <div class="profile-chip">Step 2 of onboarding</div>
+    </div>
+
+    {% include "includes/messages.html" %}
+
+    <form method="post" class="profile-card" novalidate>
+        {% csrf_token %}
+
+        <div class="step-indicator">
+            <div class="step-dot active" id="dot1">1</div>
+            <div class="step-line"></div>
+            <div class="step-dot" id="dot2">2</div>
+        </div>
+
+        <!-- STEP 1 -->
+        <div class="form-step active" id="step1">
+            <div class="section-title">
+                <h2>Avatar & Basic Information</h2>
+                <p>Your avatar is stored as a filename in the UserProfile table.</p>
+            </div>
+
+            <div class="avatar-box">
+                <div class="avatar-top">
+                    <h3>Choose Your Avatar</h3>
+                    <p>No photo upload needed. Pick one simple profile avatar.</p>
+                </div>
+
+                <div class="avatar-grid">
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="avatar_1.png"
+                            {% if profile.avatar == "avatar_1.png" or not profile.avatar %}checked{% endif %}>
+                        <div class="avatar-card">
+                            <img src="{% static 'images/avatars/avatar_1.png' %}" alt="Avatar 1">
+                            <span>Avery</span>
+                        </div>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="avatar_2.png"
+                            {% if profile.avatar == "avatar_2.png" %}checked{% endif %}>
+                        <div class="avatar-card">
+                            <img src="{% static 'images/avatars/avatar_2.png' %}" alt="Avatar 2">
+                            <span>Jordan</span>
+                        </div>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="avatar_3.png"
+                            {% if profile.avatar == "avatar_3.png" %}checked{% endif %}>
+                        <div class="avatar-card">
+                            <img src="{% static 'images/avatars/avatar_3.png' %}" alt="Avatar 3">
+                            <span>Riley</span>
+                        </div>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="avatar_4.png"
+                            {% if profile.avatar == "avatar_4.png" %}checked{% endif %}>
+                        <div class="avatar-card">
+                            <img src="{% static 'images/avatars/avatar_4.png' %}" alt="Avatar 4">
+                            <span>Taylor</span>
+                        </div>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="avatar_5.png"
+                            {% if profile.avatar == "avatar_5.png" %}checked{% endif %}>
+                        <div class="avatar-card">
+                            <img src="{% static 'images/avatars/avatar_5.png' %}" alt="Avatar 5">
+                            <span>Casey</span>
+                        </div>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="avatar_6.png"
+                            {% if profile.avatar == "avatar_6.png" %}checked{% endif %}>
+                        <div class="avatar-card">
+                            <img src="{% static 'images/avatars/avatar_6.png' %}" alt="Avatar 6">
+                            <span>Morgan</span>
+                        </div>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="avatar_7.png"
+                            {% if profile.avatar == "avatar_7.png" %}checked{% endif %}>
+                        <div class="avatar-card">
+                            <img src="{% static 'images/avatars/avatar_7.png' %}" alt="Avatar 7">
+                            <span>Jamie</span>
+                        </div>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar" value="avatar_8.png"
+                            {% if profile.avatar == "avatar_8.png" %}checked{% endif %}>
+                        <div class="avatar-card">
+                            <img src="{% static 'images/avatars/avatar_8.png' %}" alt="Avatar 8">
+                            <span>Drew</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input
+                        id="first_name"
+                        type="text"
+                        name="first_name"
+                        value="{{ profile.first_name|default:request.user.first_name }}"
+                        placeholder="Enter first name"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input
+                        id="last_name"
+                        type="text"
+                        name="last_name"
+                        value="{{ profile.last_name|default:request.user.last_name }}"
+                        placeholder="Enter last name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        id="email"
+                        type="email"
+                        value="{{ request.user.email }}"
+                        readonly
+                    >
+                    <span class="help-text">Email is managed from your login account.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="mobile_number">Mobile Number</label>
+                    <input
+                        id="mobile_number"
+                        type="tel"
+                        name="mobile_number"
+                        value="{{ profile.mobile_number|default:'' }}"
+                        placeholder="Enter mobile number"
+                    >
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-primary" onclick="nextStep()">Next Step</button>
+            </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="form-step" id="step2">
+            <div class="section-title">
+                <h2>Personal & Location Details</h2>
+                <p>Only fields available in your current UserProfile model are used.</p>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender">
+                        <option value="">Select gender</option>
+                        <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
+                        <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
+                        <option value="Other" {% if profile.gender == "Other" %}selected{% endif %}>Other</option>
+                        <option value="Prefer not to say" {% if profile.gender == "Prefer not to say" %}selected{% endif %}>Prefer not to say</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="date_of_birth">Date of Birth</label>
+                    <input
+                        id="date_of_birth"
+                        type="date"
+                        name="date_of_birth"
+                        value="{{ profile.date_of_birth|date:'Y-m-d' }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <input
+                        id="state"
+                        type="text"
+                        name="state"
+                        value="{{ profile.state|default:'' }}"
+                        placeholder="Example: Maharashtra"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="district">District</label>
+                    <input
+                        id="district"
+                        type="text"
+                        name="district"
+                        value="{{ profile.district|default:'' }}"
+                        placeholder="Example: Buldhana"
+                    >
+                </div>
+
+                <div class="form-group full">
+                    <label for="address">Address</label>
+                    <textarea
+                        id="address"
+                        name="address"
+                        rows="4"
+                        placeholder="Enter address"
+                    >{{ profile.address|default:'' }}</textarea>
+                    <span class="help-text">Keep this simple. Do not enter unnecessary sensitive details.</span>
+                </div>
+            </div>
+
+            <div class="form-actions between">
+                <button type="button" class="btn-secondary" onclick="prevStep()">Back</button>
+                <button type="submit" class="btn-primary">Save Profile</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<script>
+function nextStep() {
+    const firstName = document.getElementById("first_name");
+
+    if (!firstName.value.trim()) {
+        firstName.focus();
+        firstName.style.borderColor = "#ef4444";
+        return;
+    }
+
+    firstName.style.borderColor = "#dbe4ee";
+
+    document.getElementById("step1").classList.remove("active");
+    document.getElementById("step2").classList.add("active");
+    document.getElementById("dot1").classList.remove("active");
+    document.getElementById("dot2").classList.add("active");
+}
+
+function prevStep() {
+    document.getElementById("step2").classList.remove("active");
+    document.getElementById("step1").classList.add("active");
+    document.getElementById("dot2").classList.remove("active");
+    document.getElementById("dot1").classList.add("active");
+}
+</script>
+
+{% endblock %}

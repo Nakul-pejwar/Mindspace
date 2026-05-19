@@ -1,0 +1,868 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindSpace – Your Well-Being Matters</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f7fbf8;
+      color: #10231f;
+      overflow-x: hidden;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(18px, 5vw, 72px);
+      background: rgba(255, 255, 255, .72);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(17, 58, 54, .08);
+    }
+
+    .logo {
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 800;
+      color: #113a36;
+      letter-spacing: -1px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 34px;
+      align-items: center;
+    }
+
+    .nav a {
+      font-size: 15px;
+      font-weight: 600;
+      color: #40544f;
+    }
+
+    .nav a:hover {
+      color: #113a36;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .small-btn {
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: #113a36;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .hero {
+      min-height: 100dvh;
+      padding: 120px clamp(18px, 5vw, 72px) 70px;
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      align-items: center;
+      gap: 50px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 15% 25%, rgba(215,228,201,.95), transparent 28%),
+        radial-gradient(circle at 85% 20%, rgba(178,223,219,.7), transparent 30%),
+        linear-gradient(135deg, #f8fff8 0%, #edf8ef 45%, #e4f4ef 100%);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(10px);
+      opacity: .55;
+      animation: float 7s ease-in-out infinite;
+    }
+
+    .hero::before {
+      width: 260px;
+      height: 260px;
+      background: #bce8ae;
+      right: 8%;
+      top: 18%;
+    }
+
+    .hero::after {
+      width: 180px;
+      height: 180px;
+      background: #b2dfdb;
+      left: 8%;
+      bottom: 8%;
+      animation-delay: 1.6s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-22px); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(17,58,54,.12);
+      color: #2d5a45;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 22px;
+      box-shadow: 0 12px 30px rgba(17,58,54,.08);
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 7vw, 74px);
+      line-height: 1.02;
+      letter-spacing: -3px;
+      color: #0d2b23;
+      margin-bottom: 24px;
+    }
+
+    .hero p {
+      max-width: 560px;
+      font-size: clamp(15px, 2vw, 18px);
+      line-height: 1.8;
+      color: #40544f;
+      margin-bottom: 34px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      min-height: 54px;
+      padding: 0 28px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      transition: .25s ease;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, #113a36, #2d5a45);
+      color: #fff;
+      box-shadow: 0 20px 42px rgba(17,58,54,.25);
+    }
+
+    .secondary-btn {
+      background: rgba(255,255,255,.7);
+      color: #113a36;
+      border: 1px solid rgba(17,58,54,.14);
+    }
+
+    .primary-btn:hover,
+    .secondary-btn:hover {
+      transform: translateY(-3px);
+    }
+
+    .hero-visual {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+    }
+
+    .phone {
+      width: min(100%, 360px);
+      aspect-ratio: 9 / 16;
+      border-radius: 40px;
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,.85);
+      box-shadow: 0 34px 90px rgba(17,58,54,.25);
+      padding: 18px;
+      transform: rotate(3deg);
+    }
+
+    .phone-screen {
+      height: 100%;
+      border-radius: 30px;
+      background: linear-gradient(180deg, #113a36, #2d5a45);
+      padding: 22px;
+      color: #fff;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .phone-card {
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 22px;
+      padding: 18px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(10px);
+    }
+
+    .phone-card.light {
+      background: #fff;
+      color: #113a36;
+    }
+
+    .mood {
+      font-size: 42px;
+      margin: 10px 0;
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.2);
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: 72%;
+      background: #bce8ae;
+      border-radius: inherit;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    .section {
+      padding: clamp(60px, 8vw, 100px) clamp(18px, 5vw, 72px);
+    }
+
+    .section-title {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 44px;
+    }
+
+    .section-title span {
+      color: #2d5a45;
+      font-weight: 800;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    .section-title h2 {
+      margin-top: 12px;
+      font-size: clamp(28px, 5vw, 46px);
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+    }
+
+    .features {
+      background: #fff;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .feature-card {
+      padding: 30px;
+      border-radius: 28px;
+      background: #f7fbf8;
+      border: 1px solid rgba(17,58,54,.08);
+      box-shadow: 0 18px 50px rgba(17,58,54,.06);
+      transition: .25s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 70px rgba(17,58,54,.12);
+    }
+
+    .icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #d7e4c9, #b2dfdb);
+      font-size: 26px;
+      margin-bottom: 22px;
+    }
+
+    .feature-card h3 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      color: #113a36;
+    }
+
+    .feature-card p {
+      color: #526660;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .info {
+      background: linear-gradient(135deg, #f4fbf5, #eef8f4);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .info h2 {
+      font-size: clamp(28px, 5vw, 48px);
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+
+    .info p {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #526660;
+      max-width: 560px;
+    }
+
+    .glass-panel {
+      padding: 28px;
+      border-radius: 32px;
+      background: rgba(255,255,255,.7);
+      border: 1px solid rgba(255,255,255,.8);
+      box-shadow: 0 28px 80px rgba(17,58,54,.14);
+    }
+
+    .progress-item {
+      margin-bottom: 22px;
+    }
+
+    .progress-item strong {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      color: #113a36;
+    }
+
+    .progress {
+      height: 12px;
+      border-radius: 999px;
+      background: #e4eee7;
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #113a36, #7bbd79);
+    }
+
+    .help {
+      background: #fff;
+    }
+
+    .help-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px 1fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .symptoms {
+      display: grid;
+      gap: 14px;
+    }
+
+    .symptoms li {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: #f7fbf8;
+      border: 1px solid rgba(17,58,54,.08);
+      color: #40544f;
+      font-weight: 600;
+      list-style: none;
+    }
+
+    .center-graphic {
+      height: 320px;
+      border-radius: 32px;
+      background:
+        radial-gradient(circle at center, rgba(188,232,174,.9), transparent 38%),
+        linear-gradient(135deg, #e8f5e9, #d7f0ec);
+      display: grid;
+      place-items: center;
+      box-shadow: inset 0 0 0 1px rgba(17,58,54,.08);
+    }
+
+    .center-graphic div {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.7);
+      display: grid;
+      place-items: center;
+      font-size: 60px;
+      box-shadow: 0 24px 60px rgba(17,58,54,.15);
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    .feedback {
+      background: #f7fbf8;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .card {
+      padding: 28px;
+      border-radius: 28px;
+      background: #fff;
+      border: 1px solid rgba(17,58,54,.08);
+      box-shadow: 0 18px 50px rgba(17,58,54,.08);
+    }
+
+    .card p {
+      color: #526660;
+      line-height: 1.7;
+      margin: 16px 0;
+      font-size: 15px;
+    }
+
+    .card strong {
+      color: #113a36;
+    }
+
+    .stars {
+      color: #f59e0b;
+      letter-spacing: 2px;
+    }
+
+    .footer {
+      background: #071b18;
+      color: #fff;
+      padding: 50px clamp(18px, 5vw, 72px);
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 42px;
+    }
+
+    .footer h3 {
+      font-size: 28px;
+      margin-bottom: 14px;
+    }
+
+    .footer p,
+    .footer a {
+      color: rgba(255,255,255,.68);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .footer-links {
+      display: grid;
+      gap: 10px;
+    }
+
+    .newsletter input {
+      height: 44px;
+      width: 260px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      padding: 0 16px;
+      outline: none;
+    }
+
+    .hamburger {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      flex-direction: column;
+      gap: 5px;
+      justify-content: center;
+    }
+
+    .hamburger span {
+      width: 26px;
+      height: 3px;
+      background: #113a36;
+      border-radius: 99px;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .info {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 110px;
+        text-align: center;
+      }
+
+      .hero-content,
+      .hero p {
+        margin-inline: auto;
+      }
+
+      .hero-actions {
+        justify-content: center;
+      }
+
+      .phone {
+        max-width: 300px;
+      }
+
+      .feature-grid,
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .help-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .header {
+        height: 64px;
+      }
+
+      .nav {
+        position: fixed;
+        inset: 64px 0 auto 0;
+        background: rgba(255,255,255,.96);
+        backdrop-filter: blur(18px);
+        border-bottom: 1px solid rgba(17,58,54,.1);
+        flex-direction: column;
+        padding: 28px;
+        transform: translateY(-130%);
+        transition: .3s ease;
+      }
+
+      .nav.open {
+        transform: translateY(0);
+      }
+
+      .header-actions {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .hero {
+        min-height: auto;
+        padding-bottom: 60px;
+      }
+
+      .hero h1 {
+        letter-spacing: -1.5px;
+      }
+
+      .primary-btn,
+      .secondary-btn {
+        width: 100%;
+      }
+
+      .phone {
+        transform: none;
+      }
+
+      .footer {
+        text-align: center;
+      }
+
+      .newsletter input {
+        width: 100%;
+      }
+    }
+  </style>
+  <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+</head>
+
+<body>
+
+<header class="header">
+  <a href="{% url 'landing' %}" class="logo">MindSpace</a>
+
+  <nav class="nav" id="mainNav">
+    <a href="{% url 'landing' %}">Home</a>
+    <a href="{% url 'support' %}">Support</a>
+    <a href="{% url 'contact' %}">Contact</a>
+  </nav>
+
+  <div class="header-actions">
+    <a href="{% url 'signup' %}" class="small-btn">Start Free</a>
+    <a href="{% url 'login' %}" class="small-btn">Login</a>
+  </div>
+
+  <button class="hamburger" id="hamburger" aria-label="Open menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="badge">AI-powered well-being companion</div>
+
+    <h1>Your Well-Being Matters.</h1>
+
+    <p>
+      MindSpace helps you understand your emotions, build healthier habits,
+      and track your progress with calm AI-powered support.
+    </p>
+
+    <div class="hero-actions">
+      <a href="{% url 'signup' %}" class="primary-btn">Get Started →</a>
+      <a href="{% url 'learn_more' %}" class="secondary-btn">Learn More</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="phone-card">
+          <small>Today’s Mood</small>
+          <div class="mood">😌</div>
+          <h3>Calm & Focused</h3>
+          <div class="bar"><span></span></div>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <small>Streak</small>
+            <h2>14</h2>
+            <p>days</p>
+          </div>
+
+          <div class="stat">
+            <small>Score</small>
+            <h2>82%</h2>
+            <p>better</p>
+          </div>
+        </div>
+
+        <div class="phone-card light">
+          <strong>AI Insight</strong>
+          <p style="font-size:13px;line-height:1.5;margin-top:8px;">
+            Your sleep quality improved your mood this week.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section features">
+  <div class="section-title">
+    <span>Features</span>
+    <h2>Simple tools for better mental clarity</h2>
+  </div>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="icon">🧠</div>
+      <h3>Understand Your Mind</h3>
+      <p>Get clear insights into your thoughts, emotions, and daily patterns.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="icon">💬</div>
+      <h3>Personalized Support</h3>
+      <p>Receive calm suggestions and reflections based on your current state.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="icon">📈</div>
+      <h3>Track Growth</h3>
+      <p>Monitor your mood, habits, sleep, and progress with visual tracking.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section info">
+  <div>
+    <h2>Understand your well-being faster.</h2>
+    <p>
+      MindSpace helps you identify emotional patterns and take meaningful action
+      through small, practical steps. No pressure. No judgment. Just clarity.
+    </p>
+  </div>
+
+  <div class="glass-panel">
+    <div class="progress-item">
+      <strong><span>Stress</span><span>38%</span></strong>
+      <div class="progress"><span style="width:38%"></span></div>
+    </div>
+
+    <div class="progress-item">
+      <strong><span>Sleep Quality</span><span>76%</span></strong>
+      <div class="progress"><span style="width:76%"></span></div>
+    </div>
+
+    <div class="progress-item">
+      <strong><span>Focus</span><span>68%</span></strong>
+      <div class="progress"><span style="width:68%"></span></div>
+    </div>
+
+    <div class="progress-item">
+      <strong><span>Mood Balance</span><span>82%</span></strong>
+      <div class="progress"><span style="width:82%"></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section help">
+  <div class="section-title">
+    <span>Get Help</span>
+    <h2>Signs your mental health might need attention</h2>
+  </div>
+
+  <div class="help-grid">
+    <ul class="symptoms">
+      <li>Feeling sad or down</li>
+      <li>Inability to concentrate</li>
+      <li>Excessive fears or worries</li>
+      <li>Low energy</li>
+      <li>Sleep pattern changes</li>
+    </ul>
+
+    <div class="center-graphic">
+      <div>🌿</div>
+    </div>
+
+    <ul class="symptoms">
+      <li>Major changes in eating habits</li>
+      <li>Difficulty with daily problems</li>
+      <li>Sudden behavior changes</li>
+      <li>Excessive anger or hostility</li>
+      <li>Feeling overwhelmed</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section feedback">
+  <div class="section-title">
+    <span>Feedback</span>
+    <h2>Real stories of healing and clarity</h2>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <strong>Dr. Ananya Gupta</strong>
+      <p>MindSpace helps users track emotional patterns between sessions.</p>
+      <div class="stars">★★★★★</div>
+    </div>
+
+    <div class="card">
+      <strong>Rahul M.</strong>
+      <p>The daily check-ins helped me understand my triggers and calm myself.</p>
+      <div class="stars">★★★★★</div>
+    </div>
+
+    <div class="card">
+      <strong>Sarah Jenkins</strong>
+      <p>The interface feels calm, simple, and supportive without pressure.</p>
+      <div class="stars">★★★★★</div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div>
+    <h3>MindSpace</h3>
+    <p>Copyright © 2026 MindSpace AI.<br>All rights reserved.</p>
+  </div>
+
+  <div class="footer-links">
+    <strong>Support</strong>
+    <a href="{% url 'support' %}">Help Center</a>
+    <a href="{% url 'support' %}">Terms of Service</a>
+    <a href="{% url 'support' %}">Privacy Policy</a>
+  </div>
+
+  <div class="newsletter">
+    <strong>Stay up to date</strong><br><br>
+    <input type="email" placeholder="your@email.com">
+  </div>
+</footer>
+
+<script>
+  const hamburger = document.getElementById("hamburger");
+  const nav = document.getElementById("mainNav");
+
+  hamburger.addEventListener("click", () => {
+    nav.classList.toggle("open");
+  });
+</script>
+
+</body>
+</html>

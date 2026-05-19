@@ -1,0 +1,661 @@
+{% extends "layouts/dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Scenario Voice Response | MindSpace{% endblock %}
+
+{% block content %}
+<div class="scenario-page">
+
+  <div class="scenario-card">
+
+    <div class="scenario-header">
+      <span class="scenario-badge">Activity 3</span>
+      <h1>Scenario Voice Response</h1>
+      <p>Read the situation and respond naturally. Your audio will be transcribed, analyzed, scored, and saved.</p>
+    </div>
+
+    <div class="scenario-grid">
+
+      <div class="scenario-left">
+        <div class="scenario-box">
+          <span>Your Scenario</span>
+          <p id="scenarioText">
+            Imagine your close friend is feeling stressed and asks for your support. What would you say to them?
+          </p>
+        </div>
+
+        <div class="tips-box">
+          <h3>Tips</h3>
+          <ul>
+            <li>Speak clearly and naturally.</li>
+            <li>Try to speak for at least 15 seconds.</li>
+            <li>There is no right or wrong answer.</li>
+            <li>Use your real expression.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="scenario-right">
+
+        <div class="record-status">
+          <span id="statusDot"></span>
+          <strong id="statusText">Ready to start</strong>
+          <em id="timerText">00:00</em>
+        </div>
+
+        <div class="voice-meter">
+          <div class="meter-top">
+            <span>Voice Level</span>
+            <strong id="voicePercent">0%</strong>
+          </div>
+          <div class="meter-track">
+            <div class="meter-fill" id="voiceFill"></div>
+          </div>
+        </div>
+
+        <div class="mic-display" id="micDisplay">
+          🎙️
+        </div>
+
+        <p class="instruction" id="instructionText">
+          Press Start Recording to begin your response.
+        </p>
+
+        <audio id="audioPlayer" controls class="audio-player hidden"></audio>
+
+        <div class="button-stack">
+          <button type="button" class="btn start" id="btnStart">
+            Start Recording
+          </button>
+
+          <button type="button" class="btn stop hidden" id="btnStop">
+            Stop Recording
+          </button>
+
+          <button type="button" class="btn retry hidden" id="btnRetry">
+            Record Again
+          </button>
+
+          <button type="button" class="btn submit" id="btnSubmit" disabled>
+            Submit Response
+          </button>
+        </div>
+
+        <p class="warning hidden" id="durationWarning">
+          Speak for at least 15 seconds before submitting.
+        </p>
+
+        <p class="server-message" id="serverMessage"></p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<form id="csrfForm" style="display:none;">
+  {% csrf_token %}
+</form>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+  --ms-bg: #f4f8fb;
+  --ms-card: #ffffff;
+  --ms-text: #0f172a;
+  --ms-muted: #64748b;
+  --ms-border: #e2e8f0;
+  --ms-green: #059669;
+  --ms-green-dark: #064e3b;
+  --ms-green-soft: #ecfdf5;
+  --ms-red: #dc2626;
+}
+
+.scenario-page {
+  min-height: calc(100vh - 40px);
+  background: var(--ms-bg);
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.scenario-card {
+  width: 100%;
+  max-width: 1060px;
+  margin: 0 auto;
+  background: var(--ms-card);
+  border: 1px solid var(--ms-border);
+  border-radius: 24px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.scenario-header {
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--ms-border);
+  background: #ffffff;
+}
+
+.scenario-badge {
+  display: inline-flex;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--ms-green-soft);
+  color: var(--ms-green-dark);
+  border: 1px solid #a7f3d0;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.scenario-header h1 {
+  margin: 0;
+  color: var(--ms-green-dark);
+  font-size: clamp(1.35rem, 2vw, 1.9rem);
+}
+
+.scenario-header p {
+  margin: 7px 0 0;
+  color: var(--ms-muted);
+  font-size: 0.92rem;
+}
+
+.scenario-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.scenario-left,
+.scenario-right {
+  padding: 24px;
+}
+
+.scenario-left {
+  border-right: 1px solid var(--ms-border);
+}
+
+.scenario-box {
+  background: #f8fafc;
+  border: 1px solid var(--ms-border);
+  border-left: 4px solid var(--ms-green);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.scenario-box span {
+  display: block;
+  color: var(--ms-green-dark);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.scenario-box p {
+  margin: 0;
+  color: var(--ms-text);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.tips-box {
+  margin-top: 18px;
+}
+
+.tips-box h3 {
+  margin: 0 0 10px;
+  color: var(--ms-text);
+  font-size: 0.95rem;
+}
+
+.tips-box ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--ms-muted);
+  font-size: 0.88rem;
+  line-height: 1.9;
+}
+
+.record-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid var(--ms-border);
+}
+
+.record-status span {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: #94a3b8;
+}
+
+.record-status span.recording {
+  background: var(--ms-red);
+}
+
+.record-status strong {
+  color: var(--ms-muted);
+  font-size: 0.84rem;
+  flex: 1;
+}
+
+.record-status em {
+  color: var(--ms-text);
+  font-style: normal;
+  font-weight: 900;
+}
+
+.voice-meter {
+  margin-top: 18px;
+}
+
+.meter-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.meter-top span,
+.meter-top strong {
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.meter-top span {
+  color: var(--ms-muted);
+}
+
+.meter-top strong {
+  color: var(--ms-green);
+}
+
+.meter-track {
+  height: 12px;
+  background: #eef2f7;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.meter-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #6ee7b7, var(--ms-green), var(--ms-green-dark));
+}
+
+.mic-display {
+  width: 92px;
+  height: 92px;
+  border-radius: 999px;
+  margin: 26px auto 12px;
+  display: grid;
+  place-items: center;
+  background: var(--ms-green-soft);
+  border: 2px solid #a7f3d0;
+  font-size: 2.5rem;
+}
+
+.mic-display.recording {
+  animation: micPulse 1.5s infinite;
+}
+
+@keyframes micPulse {
+  0% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.3); }
+  70% { box-shadow: 0 0 0 18px rgba(5, 150, 105, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
+}
+
+.instruction {
+  color: var(--ms-muted);
+  text-align: center;
+  font-size: 0.86rem;
+  margin: 0 0 16px;
+}
+
+.audio-player {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.button-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.btn {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn.start,
+.btn.submit {
+  background: var(--ms-green);
+  color: #ffffff;
+}
+
+.btn.stop {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.btn.retry {
+  background: #ffffff;
+  color: var(--ms-text);
+  border: 1px solid var(--ms-border);
+}
+
+.warning {
+  color: #b45309;
+  font-size: 0.82rem;
+  text-align: center;
+  margin: 10px 0 0;
+}
+
+.server-message {
+  color: var(--ms-muted);
+  font-size: 0.84rem;
+  text-align: center;
+  margin: 12px 0 0;
+}
+
+.server-message.error {
+  color: #b91c1c;
+}
+
+.server-message.success {
+  color: var(--ms-green-dark);
+}
+
+@media (max-width: 860px) {
+  .scenario-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .scenario-left {
+    border-right: none;
+    border-bottom: 1px solid var(--ms-border);
+  }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  "use strict";
+
+  const btnStart = document.getElementById("btnStart");
+  const btnStop = document.getElementById("btnStop");
+  const btnRetry = document.getElementById("btnRetry");
+  const btnSubmit = document.getElementById("btnSubmit");
+
+  const timerText = document.getElementById("timerText");
+  const statusText = document.getElementById("statusText");
+  const statusDot = document.getElementById("statusDot");
+  const micDisplay = document.getElementById("micDisplay");
+  const instructionText = document.getElementById("instructionText");
+
+  const voiceFill = document.getElementById("voiceFill");
+  const voicePercent = document.getElementById("voicePercent");
+
+  const audioPlayer = document.getElementById("audioPlayer");
+  const durationWarning = document.getElementById("durationWarning");
+  const serverMessage = document.getElementById("serverMessage");
+  const scenarioText = document.getElementById("scenarioText");
+
+  let stream = null;
+  let mediaRecorder = null;
+  let chunks = [];
+  let audioBlob = null;
+
+  let audioContext = null;
+  let analyser = null;
+  let dataArray = null;
+  let animationId = null;
+
+  let startedAt = null;
+  let timerInterval = null;
+  let durationSeconds = 0;
+
+  function csrfToken() {
+    const input = document.querySelector("[name=csrfmiddlewaretoken]");
+    return input ? input.value : "";
+  }
+
+  function setMessage(text, type) {
+    serverMessage.textContent = text || "";
+    serverMessage.className = "server-message";
+    if (type) serverMessage.classList.add(type);
+  }
+
+  function formatTime(seconds) {
+    const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    return `${m}:${s}`;
+  }
+
+  function startTimer() {
+    startedAt = Date.now();
+
+    timerInterval = setInterval(function () {
+      durationSeconds = Math.floor((Date.now() - startedAt) / 1000);
+      timerText.textContent = formatTime(durationSeconds);
+    }, 300);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
+
+  function monitorVoice() {
+    analyser.getByteTimeDomainData(dataArray);
+
+    let sum = 0;
+
+    for (let i = 0; i < dataArray.length; i++) {
+      const value = (dataArray[i] - 128) / 128;
+      sum += value * value;
+    }
+
+    const rms = Math.sqrt(sum / dataArray.length);
+    const percent = Math.min(100, Math.round(rms * 450));
+
+    voiceFill.style.width = `${percent}%`;
+    voicePercent.textContent = `${percent}%`;
+
+    animationId = requestAnimationFrame(monitorVoice);
+  }
+
+  async function startRecording() {
+    setMessage("", "");
+    durationWarning.classList.add("hidden");
+    audioPlayer.classList.add("hidden");
+    audioBlob = null;
+    chunks = [];
+    durationSeconds = 0;
+    timerText.textContent = "00:00";
+
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
+
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+
+      dataArray = new Uint8Array(analyser.fftSize);
+
+      mediaRecorder = new MediaRecorder(stream, {
+        mimeType: MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+          ? "audio/webm;codecs=opus"
+          : "audio/webm"
+      });
+
+      mediaRecorder.ondataavailable = function (event) {
+        if (event.data && event.data.size > 0) {
+          chunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = function () {
+        audioBlob = new Blob(chunks, { type: "audio/webm" });
+        audioPlayer.src = URL.createObjectURL(audioBlob);
+        audioPlayer.classList.remove("hidden");
+
+        btnSubmit.disabled = durationSeconds < 15;
+        durationWarning.classList.toggle("hidden", durationSeconds >= 15);
+
+        statusText.textContent = "Recording ready";
+        instructionText.textContent = "Review your response, then submit.";
+      };
+
+      mediaRecorder.start();
+      startTimer();
+      monitorVoice();
+
+      btnStart.classList.add("hidden");
+      btnStop.classList.remove("hidden");
+      btnRetry.classList.add("hidden");
+      btnSubmit.disabled = true;
+
+      statusText.textContent = "Recording...";
+      statusDot.classList.add("recording");
+      micDisplay.classList.add("recording");
+      instructionText.textContent = "Speak naturally about the scenario.";
+
+    } catch (error) {
+      setMessage("Microphone permission failed: " + error.message, "error");
+    }
+  }
+
+  function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      mediaRecorder.stop();
+    }
+
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+
+    if (audioContext) {
+      audioContext.close();
+    }
+
+    cancelAnimationFrame(animationId);
+    stopTimer();
+
+    btnStop.classList.add("hidden");
+    btnRetry.classList.remove("hidden");
+    btnStart.classList.remove("hidden");
+
+    statusDot.classList.remove("recording");
+    micDisplay.classList.remove("recording");
+  }
+
+  function retryRecording() {
+    audioBlob = null;
+    audioPlayer.classList.add("hidden");
+    btnSubmit.disabled = true;
+    durationWarning.classList.add("hidden");
+    setMessage("", "");
+    timerText.textContent = "00:00";
+    statusText.textContent = "Ready to start";
+    instructionText.textContent = "Press Start Recording to begin your response.";
+  }
+
+  async function submitScenario() {
+    if (!audioBlob) {
+      setMessage("Record audio first.", "error");
+      return;
+    }
+
+    if (durationSeconds < 15) {
+      durationWarning.classList.remove("hidden");
+      return;
+    }
+
+    btnSubmit.disabled = true;
+    btnStart.disabled = true;
+    btnRetry.disabled = true;
+
+    setMessage("Uploading scenario response and running text analysis...", "");
+
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "scenario-response.webm");
+    formData.append("scenario_id", scenarioText.textContent.trim());
+    formData.append("scenario_text", scenarioText.textContent.trim());
+    formData.append("duration", String(durationSeconds));
+
+    try {
+      const response = await fetch("{% url 'upload_scenario_voice_response' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken()
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Scenario upload failed.");
+      }
+
+      setMessage("Scenario response saved. Running final fusion...", "success");
+
+      const fusionResponse = await fetch("{% url 'run_multimodal_fusion' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken()
+        }
+      });
+
+      const fusionData = await fusionResponse.json();
+
+      if (!fusionResponse.ok || !fusionData.ok) {
+        throw new Error(fusionData.error || "Fusion failed.");
+      }
+
+      setMessage("All activities completed. Redirecting...", "success");
+
+      setTimeout(function () {
+        window.location.href = "{% url 'activity_complete' %}";
+      }, 900);
+
+    } catch (error) {
+      setMessage(error.message, "error");
+      btnSubmit.disabled = false;
+      btnStart.disabled = false;
+      btnRetry.disabled = false;
+    }
+  }
+
+  btnStart.addEventListener("click", startRecording);
+  btnStop.addEventListener("click", stopRecording);
+  btnRetry.addEventListener("click", retryRecording);
+  btnSubmit.addEventListener("click", submitScenario);
+})();
+</script>
+{% endblock %}

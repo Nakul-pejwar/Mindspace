@@ -1,0 +1,370 @@
+{% load static %}
+{% load socialaccount %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Login – MindSpace</title>
+
+  <style>
+    :root {
+      --clr-brand-900: #113a36;
+      --clr-brand-800: #143b33;
+      --clr-brand-700: #1a3e39;
+      --clr-brand-600: #2d5a45;
+      --clr-brand-500: #3a5e4e;
+      --clr-brand-400: #6b8a7a;
+      --clr-brand-100: #d7e4c9;
+
+      --clr-white: #ffffff;
+      --clr-black: #000000;
+      --clr-gray-900: #313131;
+      --clr-gray-700: #717171;
+      --clr-gray-500: #8d8d8d;
+      --clr-gray-300: #d9d9d9;
+
+      --clr-error: #b91c1c;
+      --font-primary: 'Poppins', sans-serif;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      color: #0f1125;
+      background: var(--clr-white);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+    }
+
+    input {
+      font-family: inherit;
+      outline: none;
+    }
+
+    .auth-page {
+      width: 100%;
+      height: 100dvh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-page__bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .auth-page__overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, rgba(17,58,54,.82), rgba(17,58,54,.35)),
+        radial-gradient(circle at 80% 20%, rgba(215,228,201,.35), transparent 30%);
+      z-index: 1;
+    }
+
+    .auth-card {
+      position: relative;
+      z-index: 2;
+      width: min(92vw, 430px);
+      max-height: calc(100dvh - 28px);
+      padding: clamp(18px, 3vh, 32px) clamp(22px, 3vw, 36px);
+      border-radius: 24px;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,.6);
+      box-shadow: 0 24px 70px rgba(0,0,0,.25);
+      overflow: hidden;
+    }
+
+    .auth-card__title {
+      font-size: clamp(24px, 4vh, 34px);
+      font-weight: 700;
+      color: #10231f;
+      margin-bottom: 6px;
+    }
+
+    .auth-card__sub {
+      font-size: clamp(12px, 1.8vh, 14px);
+      color: #647067;
+      line-height: 1.4;
+      margin-bottom: clamp(12px, 2vh, 18px);
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(8px, 1.5vh, 14px);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-size: clamp(11px, 1.5vh, 13px);
+      font-weight: 600;
+      color: #243b35;
+    }
+
+    .field input {
+      width: 100%;
+      height: clamp(38px, 5.4vh, 46px);
+      padding: 0 14px;
+      border-radius: 13px;
+      border: 1px solid #dce4dc;
+      background: #fbfdfb;
+      color: #1f2f2b;
+      font-size: clamp(12px, 1.6vh, 14px);
+    }
+
+    .field input:focus {
+      border-color: var(--clr-brand-900);
+      box-shadow: 0 0 0 4px rgba(17,58,54,.12);
+      background: #fff;
+    }
+
+    .auth-forgot {
+      align-self: flex-end;
+      margin-top: -5px;
+      font-size: clamp(10px, 1.4vh, 12px);
+      color: var(--clr-brand-700);
+      font-weight: 600;
+    }
+
+    .auth-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: clamp(10px, 1.4vh, 12px);
+      color: #53605b;
+    }
+
+    .auth-check input[type=checkbox] {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 14px;
+    }
+
+    .btn--auth {
+      width: 100%;
+      height: clamp(38px, 5.4vh, 48px);
+      border-radius: 14px;
+      background: linear-gradient(135deg, #113a36, #2d5a45);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .google-form {
+      margin-top: 12px;
+    }
+
+    .google-btn {
+      width: 100%;
+      height: 46px;
+      border: 1px solid #d7e2dc;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #18352c;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .google-icon {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .auth-switch {
+      margin-top: 14px;
+      font-size: clamp(11px, 1.5vh, 13px);
+      color: #4d5b56;
+      text-align: center;
+    }
+
+    .auth-switch a {
+      color: var(--clr-brand-900);
+      font-weight: 700;
+    }
+
+    .message {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fee2e2;
+      color: #991b1b;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    @media (max-height: 720px) {
+      .auth-card {
+        width: min(90vw, 410px);
+        padding: 18px 30px;
+      }
+
+      .auth-card__title {
+        font-size: 26px;
+      }
+
+      .auth-card__sub {
+        margin-bottom: 10px;
+      }
+
+      .auth-form {
+        gap: 8px;
+      }
+
+      .field input,
+      .btn--auth,
+      .google-btn {
+        height: 36px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .auth-card {
+        width: 100%;
+        padding: 20px 18px;
+        border-radius: 20px;
+      }
+
+      .auth-card__title {
+        font-size: 24px;
+      }
+    }
+  </style>
+  <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+</head>
+
+<body>
+
+<div class="auth-page">
+  <img
+    class="auth-page__bg"
+    src="{% static 'images/signup_login_bg.png' %}"
+    alt=""
+    aria-hidden="true"
+  />
+
+  <div class="auth-page__overlay"></div>
+
+  <div class="auth-card">
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="message">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <h1 class="auth-card__title">Welcome back!</h1>
+    <p class="auth-card__sub">Enter your credentials to access your account</p>
+
+    <!-- Normal email/password login form -->
+    <form class="auth-form" method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+
+      <div class="field">
+        <label for="email">Email address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter your email"
+          autocomplete="email"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          required
+        >
+      </div>
+
+      <a class="auth-forgot" href="{% url 'forgot_password' %}">
+        forgot password
+      </a>
+
+      <label class="auth-check">
+        <input type="checkbox" name="remember">
+        Remember for 30 days
+      </label>
+
+      <button type="submit" class="btn--auth">Login</button>
+    </form>
+
+    <!-- Google login form: POST method avoids ugly allauth confirmation page -->
+    <form method="POST" action="{% provider_login_url 'google' %}" class="google-form">
+      {% csrf_token %}
+      <button type="submit" class="google-btn">
+        <img src="{% static 'images/google-logo.svg' %}" alt="Google" class="google-icon">
+        <span>Continue with Google</span>
+      </button>
+    </form>
+
+    <p class="auth-switch">
+      Don't have an account?
+      <a href="{% url 'signup' %}">Sign Up</a>
+    </p>
+
+  </div>
+</div>
+
+</body>
+</html>

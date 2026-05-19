@@ -1,0 +1,1107 @@
+{% extends "layouts/dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Dashboard | MindSpace{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-root {
+        --ms-card: #ffffff;
+        --ms-border: #e2e8f0;
+        --ms-text: #0f172a;
+        --ms-muted: #64748b;
+        --ms-green: #059669;
+        --ms-green-dark: #065f46;
+        --ms-green-soft: #ecfdf5;
+        --ms-green-border: #a7f3d0;
+        --ms-blue-soft: #eff6ff;
+        --ms-blue-border: #bfdbfe;
+        --ms-blue-text: #1d4ed8;
+        --ms-amber-soft: #fffbeb;
+        --ms-amber-border: #fde68a;
+        --ms-amber-text: #92400e;
+        --ms-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 18px rgba(15, 23, 42, 0.05);
+
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 12px 16px;
+        color: var(--ms-text);
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @keyframes msFadeUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ms-animate {
+        opacity: 0;
+        animation: msFadeUp 0.35s ease forwards;
+    }
+
+    .delay-1 { animation-delay: 0.05s; }
+    .delay-2 { animation-delay: 0.10s; }
+
+    .card {
+        background: var(--ms-card);
+        border: 1px solid var(--ms-border);
+        border-radius: 18px;
+        box-shadow: var(--ms-shadow);
+    }
+
+    /* Notification */
+    .notification-wrap {
+        position: relative;
+        z-index: 20;
+    }
+
+    #notificationBtn {
+        width: 40px;
+        height: 40px;
+        border: 1px solid rgba(255,255,255,0.32);
+        border-radius: 14px;
+        background: rgba(255,255,255,0.16);
+        color: #ffffff;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+    }
+
+    #notificationDot {
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #ef4444;
+        border: 2px solid #ffffff;
+    }
+
+    #notificationPopup {
+        position: fixed !important;
+        top: 72px;
+        right: 24px;
+        width: 340px;
+        max-width: calc(100vw - 24px);
+        border-radius: 16px;
+        background: #ffffff;
+        border: 1px solid var(--ms-border);
+        box-shadow: 0 24px 70px rgba(15,23,42,0.24);
+        overflow: hidden;
+        z-index: 2147483647 !important;
+        transform-origin: top right;
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    }
+
+    body > #notificationPopup {
+        z-index: 2147483647 !important;
+    }
+
+    #notificationPopup.hidden {
+        opacity: 0;
+        transform: scale(0.97) translateY(-6px);
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    #notificationPopup:not(.hidden) {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    .notification-head {
+        padding: 12px 14px;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        border-bottom: 1px solid var(--ms-border);
+    }
+
+    .notification-head h3 {
+        margin: 0;
+        font-size: 0.88rem;
+        font-weight: 900;
+    }
+
+    .notification-head p {
+        margin: 2px 0 0;
+        font-size: 0.72rem;
+        color: var(--ms-muted);
+    }
+
+    .notification-count {
+        height: fit-content;
+        border-radius: 999px;
+        padding: 4px 8px;
+        background: var(--ms-green-soft);
+        border: 1px solid var(--ms-green-border);
+        color: var(--ms-green-dark);
+        font-size: 0.68rem;
+        font-weight: 900;
+    }
+
+    .notification-list {
+        max-height: 260px;
+        overflow-y: auto;
+    }
+
+    .notification-item {
+        display: flex;
+        gap: 10px;
+        padding: 10px 14px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .notification-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 11px;
+        display: grid;
+        place-items: center;
+        background: var(--ms-green-soft);
+        color: var(--ms-green);
+        flex: 0 0 auto;
+    }
+
+    .notification-item h4 {
+        margin: 0;
+        font-size: 0.76rem;
+        font-weight: 900;
+    }
+
+    .notification-item p {
+        margin: 3px 0 0;
+        color: var(--ms-muted);
+        font-size: 0.71rem;
+        line-height: 1.35;
+    }
+
+    .notification-time {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 5px;
+        color: #94a3b8;
+        font-size: 0.65rem;
+        font-weight: 800;
+    }
+
+    .notification-empty {
+        padding: 24px 16px;
+        text-align: center;
+        color: var(--ms-muted);
+    }
+
+    .notification-footer {
+        padding: 9px 12px;
+        background: #f8fafc;
+        border-top: 1px solid var(--ms-border);
+        text-align: center;
+    }
+
+    .notification-footer a {
+        color: var(--ms-green);
+        text-decoration: none;
+        font-size: 0.72rem;
+        font-weight: 900;
+    }
+
+    /* Main hero */
+    .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 18px;
+        margin-bottom: 12px;
+        border-radius: 24px;
+        color: #ffffff;
+        border: 1px solid rgba(167,243,208,0.50);
+        background:
+            linear-gradient(100deg, rgba(6,95,70,0.98), rgba(5,150,105,0.88), rgba(16,185,129,0.58)),
+            url("{% static 'images/dashboard-bg.png' %}");
+        background-size: cover;
+        background-position: center;
+        box-shadow: var(--ms-shadow);
+    }
+
+    .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at 80% 20%, rgba(255,255,255,0.14), transparent 28%),
+            radial-gradient(circle at 20% 70%, rgba(255,255,255,0.08), transparent 34%);
+        pointer-events: none;
+    }
+
+    .hero > * {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .hero-eyebrow {
+        margin: 0 0 3px;
+        color: rgba(255,255,255,0.78);
+        font-size: 0.70rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 900;
+    }
+
+    .hero-name {
+        margin: 0;
+        color: #ffffff;
+        font-size: clamp(1.25rem, 2vw, 1.7rem);
+        line-height: 1;
+        font-weight: 950;
+    }
+
+    .hero-subtitle {
+        margin: 6px 0 0;
+        color: rgba(255,255,255,0.84);
+        font-size: 0.82rem;
+        line-height: 1.4;
+    }
+
+    .hero-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 0 0 auto;
+    }
+
+    .streak-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 11px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.25);
+        color: #ffffff;
+        backdrop-filter: blur(8px);
+        font-size: 0.74rem;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 14px;
+        align-items: stretch;
+    }
+
+    .habit-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 9px;
+        margin-bottom: 9px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.22);
+        font-size: 0.66rem;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .hero-title {
+        margin: 0 0 8px;
+        font-size: clamp(1.10rem, 1.9vw, 1.48rem);
+        line-height: 1.16;
+        font-weight: 950;
+    }
+
+    .hero-text {
+        margin: 0 0 12px;
+        color: rgba(255,255,255,0.84);
+        font-size: 0.78rem;
+        line-height: 1.45;
+        max-width: 540px;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 13px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-size: 0.75rem;
+        font-weight: 900;
+    }
+
+    .primary-btn {
+        background: #ffffff;
+        color: var(--ms-green-dark);
+    }
+
+    .secondary-btn {
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.23);
+        color: #ffffff;
+    }
+
+    .today-card {
+        display: grid;
+        gap: 10px;
+        padding: 13px;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.95);
+        border: 1px solid rgba(255,255,255,0.65);
+        color: var(--ms-text);
+        backdrop-filter: blur(10px);
+    }
+
+    .today-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .card-kicker {
+        color: var(--ms-muted);
+        font-size: 0.68rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .time-pill {
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--ms-green-soft);
+        border: 1px solid var(--ms-green-border);
+        color: var(--ms-green-dark);
+        font-size: 0.66rem;
+        font-weight: 900;
+    }
+
+    .today-task {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 14px;
+        background: #f8fafc;
+        border: 1px solid var(--ms-border);
+    }
+
+    .task-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: var(--ms-green-soft);
+        color: var(--ms-green);
+        flex: 0 0 auto;
+    }
+
+    .today-task strong {
+        display: block;
+        font-size: 0.86rem;
+        font-weight: 950;
+    }
+
+    .today-task span {
+        display: block;
+        margin-top: 2px;
+        color: var(--ms-muted);
+        font-size: 0.70rem;
+    }
+
+    .progress-track {
+        height: 8px;
+        border-radius: 999px;
+        background: #e2e8f0;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        width: var(--activity-progress, 66%);
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--ms-green-dark), var(--ms-green));
+    }
+
+    .simple-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .simple-stat {
+        padding: 9px;
+        border-radius: 13px;
+        border: 1px solid var(--ms-border);
+        background: #f8fafc;
+    }
+
+    .simple-stat small {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--ms-muted);
+        font-size: 0.62rem;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .simple-stat strong {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 950;
+    }
+
+    /* Below hero */
+    .main-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.80fr);
+        gap: 10px;
+    }
+
+    .panel {
+        padding: 14px;
+    }
+
+    .section-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .section-head h3 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 950;
+    }
+
+    .section-head p {
+        margin: 3px 0 0;
+        color: var(--ms-muted);
+        font-size: 0.74rem;
+    }
+
+    .section-link {
+        color: var(--ms-green);
+        text-decoration: none;
+        font-size: 0.72rem;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .daily-task-card {
+        padding: 13px;
+        border-radius: 16px;
+        border: 1px solid var(--ms-green-border);
+        background: linear-gradient(145deg, #ffffff, #f0fdf4);
+    }
+
+    .daily-task-card h4 {
+        margin: 0 0 5px;
+        font-size: 0.95rem;
+        font-weight: 950;
+    }
+
+    .daily-task-card p {
+        margin: 0 0 12px;
+        color: var(--ms-muted);
+        font-size: 0.76rem;
+        line-height: 1.4;
+    }
+
+    .steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .step {
+        padding: 10px;
+        border-radius: 13px;
+        background: #f8fafc;
+        border: 1px solid var(--ms-border);
+    }
+
+    .step small {
+        display: block;
+        color: var(--ms-muted);
+        font-size: 0.62rem;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .step strong {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 900;
+    }
+
+    .side-stack {
+        display: grid;
+        gap: 10px;
+    }
+
+    .badges-card {
+        background: linear-gradient(145deg, #ffffff, var(--ms-blue-soft));
+        border-color: var(--ms-blue-border);
+    }
+
+    .badge-preview-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .badge-tile {
+        display: block;
+        padding: 10px;
+        border-radius: 13px;
+        text-decoration: none;
+        background: #ffffff;
+        border: 1px solid var(--ms-blue-border);
+    }
+
+    .badge-tile.locked {
+        border-color: var(--ms-border);
+        background: #f8fafc;
+    }
+
+    .badge-tile strong {
+        display: block;
+        color: var(--ms-blue-text);
+        font-size: 0.76rem;
+        font-weight: 950;
+    }
+
+    .badge-tile.locked strong {
+        color: var(--ms-muted);
+    }
+
+    .badge-tile span {
+        display: block;
+        margin-top: 4px;
+        color: var(--ms-muted);
+        font-size: 0.66rem;
+        line-height: 1.25;
+    }
+
+    .reminder-card {
+        background: linear-gradient(145deg, #ffffff, var(--ms-green-soft));
+        border-color: var(--ms-green-border);
+    }
+
+    .reminder-card p,
+    .support-card p {
+        margin: 0 0 10px;
+        font-size: 0.74rem;
+        line-height: 1.4;
+    }
+
+    .reminder-card p {
+        color: var(--ms-green-dark);
+    }
+
+    .mini-btn,
+    .support-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 10px;
+        background: #ffffff;
+        color: var(--ms-green-dark);
+        text-decoration: none;
+        font-size: 0.72rem;
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+    .support-card {
+        background: linear-gradient(145deg, #ffffff, var(--ms-amber-soft));
+        border-color: var(--ms-amber-border);
+    }
+
+    .support-card p {
+        color: var(--ms-amber-text);
+    }
+
+    .support-link {
+        color: #78350f;
+    }
+
+    @media (max-width: 1100px) {
+        .hero-grid,
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .dashboard-root {
+            padding: 12px;
+        }
+
+        .hero-top {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+
+        .hero-right {
+            justify-content: space-between;
+        }
+
+        .simple-row,
+        .steps,
+        .badge-preview-grid {
+            grid-template-columns: 1fr;
+        }
+
+        #notificationPopup {
+            top: 64px;
+            right: 10px;
+            width: calc(100vw - 20px);
+        }
+    }
+
+    @media (max-height: 860px) {
+        .hero-subtitle,
+        .hero-text,
+        .section-head p,
+        .daily-task-card p,
+        .badge-tile span,
+        .reminder-card p,
+        .support-card p {
+            display: none;
+        }
+
+        .hero {
+            min-height: 160px;
+            padding: 14px;
+        }
+
+        .panel,
+        .today-card {
+            padding-top: 11px;
+            padding-bottom: 11px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation: none !important;
+            transition: none !important;
+            scroll-behavior: auto !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% with profile=request.user.profile %}
+<div class="dashboard-root">
+
+    <section class="hero ms-animate">
+        <div class="hero-top">
+            <div>
+                <p id="timeGreeting" class="hero-eyebrow">Good Morning</p>
+                <h1 class="hero-name">
+                    {% if profile.first_name %}
+                        {{ profile.first_name }}
+                    {% elif request.user.first_name %}
+                        {{ request.user.first_name }}
+                    {% else %}
+                        {{ request.user.email }}
+                    {% endif %}
+                </h1>
+                <p class="hero-subtitle">One short activity is ready for you today.</p>
+            </div>
+
+            <div class="hero-right">
+                <span class="streak-pill">
+                    <span class="material-symbols-outlined text-sm">local_fire_department</span>
+                    {{ current_streak|default:3 }} day streak
+                </span>
+
+                <div class="notification-wrap">
+                    <button id="notificationBtn" type="button" aria-label="Open notifications" aria-expanded="false" aria-controls="notificationPopup">
+                        <span class="material-symbols-outlined">notifications</span>
+                        {% if unread_notifications_count > 0 %}
+                            <span id="notificationDot"></span>
+                        {% endif %}
+                    </button>
+
+                    <div id="notificationPopup" class="hidden" role="region" aria-label="Notifications panel">
+                        <div class="notification-head">
+                            <div>
+                                <h3>Notifications</h3>
+                                <p>{{ unread_notifications_count|default:0 }} unread updates</p>
+                            </div>
+                            {% if unread_notifications_count > 0 %}
+                                <span class="notification-count">{{ unread_notifications_count }} new</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="notification-list">
+                            {% if notifications %}
+                                {% for notification in notifications %}
+                                    <div class="notification-item">
+                                        <div class="notification-icon">
+                                            <span class="material-symbols-outlined">
+                                                {% if notification.notification_type == 'message' %}
+                                                    forum
+                                                {% elif notification.notification_type == 'activity' %}
+                                                    task_alt
+                                                {% elif notification.notification_type == 'warning' %}
+                                                    warning
+                                                {% elif notification.notification_type == 'achievement' %}
+                                                    verified
+                                                {% else %}
+                                                    notifications
+                                                {% endif %}
+                                            </span>
+                                        </div>
+
+                                        <div class="min-w-0">
+                                            <h4>{{ notification.title }}</h4>
+                                            <p>{{ notification.message }}</p>
+                                            <span class="notification-time">
+                                                <span class="material-symbols-outlined text-sm">schedule</span>
+                                                {{ notification.created_at|timesince }} ago
+                                            </span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="notification-empty">
+                                    <span class="material-symbols-outlined text-3xl text-stone-300">notifications_off</span>
+                                    <p class="mt-2 text-sm font-bold">No notifications</p>
+                                    <p class="text-xs">You are all caught up.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="notification-footer">
+                            <a href="#">View all notifications</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-grid">
+            <div>
+                <span class="habit-label">
+                    <span class="material-symbols-outlined text-sm">favorite</span>
+                    Daily Wellness Habit
+                </span>
+
+                <h2 class="hero-title">Start today’s guided wellness check.</h2>
+                <p class="hero-text">It takes around 2 minutes. Finish one activity and your progress will be saved.</p>
+
+                <div class="hero-actions">
+                    <a href="{% url 'check_in' %}" class="primary-btn">
+                        Start Today's Activity
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </a>
+
+                    <a href="{% url 'badges' %}" class="secondary-btn">
+                        View Badges
+                        <span class="material-symbols-outlined text-sm">military_tech</span>
+                    </a>
+                </div>
+            </div>
+
+            <aside class="today-card">
+                <div class="today-top">
+                    <span class="card-kicker">Today’s Activity</span>
+                    <span class="time-pill">2 min</span>
+                </div>
+
+                <div class="today-task">
+                    <div class="task-icon">
+                        <span class="material-symbols-outlined">self_improvement</span>
+                    </div>
+
+                    <div>
+                        <strong>{{ today_activity_name|default:"Guided Wellness Check" }}</strong>
+                        <span>Only one activity is shown at a time.</span>
+                    </div>
+                </div>
+
+                <div class="progress-track" aria-label="Today progress">
+                    <div class="progress-fill" style="--activity-progress: {{ activity_percent|default:66 }}%;"></div>
+                </div>
+
+                <div class="simple-row">
+                    <div class="simple-stat">
+                        <small>Today</small>
+                        <strong>{{ activities_completed|default:2 }}/{{ activities_total|default:3 }}</strong>
+                    </div>
+
+                    <div class="simple-stat">
+                        <small>This Week</small>
+                        <strong>{{ weekly_checks|default:4 }}</strong>
+                    </div>
+
+                    <div class="simple-stat">
+                        <small>Badges</small>
+                        <strong>{{ earned_badges_count|default:2 }}</strong>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </section>
+
+    <section class="main-grid ms-animate delay-1">
+        <div class="card panel">
+            <div class="section-head">
+                <div>
+                    <h3>What to do now</h3>
+                    <p>Keep it simple. Start, complete, and come back tomorrow.</p>
+                </div>
+                <a href="{% url 'check_in' %}" class="section-link">Start now</a>
+            </div>
+
+            <div class="daily-task-card">
+                <h4>{{ today_activity_name|default:"Guided Wellness Check" }}</h4>
+                <p>Complete today’s check-in and one short activity. After completion, your streak and badge progress can update.</p>
+
+                <a href="{% url 'check_in' %}" class="primary-btn">
+                    Start Activity
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <small>Step 1</small>
+                    <strong>Check-in</strong>
+                </div>
+
+                <div class="step">
+                    <small>Step 2</small>
+                    <strong>One Activity</strong>
+                </div>
+
+                <div class="step">
+                    <small>Step 3</small>
+                    <strong>Progress Saved</strong>
+                </div>
+            </div>
+        </div>
+
+        <aside class="side-stack">
+            <div class="card panel badges-card">
+                <div class="section-head">
+                    <div>
+                        <h3>Badges</h3>
+                        <p>Tap to see earned and incomplete badges.</p>
+                    </div>
+                    <a href="{% url 'badges' %}" class="section-link">View all</a>
+                </div>
+
+                <div class="badge-preview-grid">
+                    <a href="{% url 'badges' %}" class="badge-tile">
+                        <strong>First Check-in</strong>
+                        <span>Completed.</span>
+                    </a>
+
+                    <a href="{% url 'badges' %}" class="badge-tile locked">
+                        <strong>7-Day Streak</strong>
+                        <span>Complete 7 days to unlock.</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="card panel reminder-card">
+                <div class="section-head">
+                    <div>
+                        <h3>Daily Reminder</h3>
+                        <p>Helps users return regularly.</p>
+                    </div>
+                </div>
+
+                <p>Choose a gentle time to remember today’s activity.</p>
+
+                <button type="button" class="mini-btn">
+                    Set Reminder
+                    <span class="material-symbols-outlined text-sm">notifications_active</span>
+                </button>
+            </div>
+
+            <div class="card panel support-card">
+                <div class="section-head">
+                    <div>
+                        <h3>Support Options</h3>
+                        <p>For users who want to talk to someone.</p>
+                    </div>
+                </div>
+
+                <p>Support is available when the user wants human help.</p>
+
+                <a href="#" class="support-link">
+                    Open Support
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+            </div>
+        </aside>
+    </section>
+
+</div>
+{% endwith %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const greetingEl = document.getElementById("timeGreeting");
+
+        if (greetingEl) {
+            const hour = new Date().getHours();
+            let greeting = "Good Morning";
+
+            if (hour >= 12 && hour < 17) {
+                greeting = "Good Afternoon";
+            } else if (hour >= 17) {
+                greeting = "Good Evening";
+            }
+
+            greetingEl.textContent = greeting;
+        }
+
+        const notificationBtn = document.getElementById("notificationBtn");
+        const notificationPopup = document.getElementById("notificationPopup");
+        const notificationDot = document.getElementById("notificationDot");
+
+        function getCSRFToken() {
+            const name = "csrftoken";
+            const cookies = document.cookie.split(";");
+
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+
+                if (cookie.startsWith(name + "=")) {
+                    return decodeURIComponent(cookie.substring(name.length + 1));
+                }
+            }
+
+            return "";
+        }
+
+        if (notificationBtn && notificationPopup) {
+            document.body.appendChild(notificationPopup);
+
+            function positionPopup() {
+                const rect = notificationBtn.getBoundingClientRect();
+                const popupWidth = Math.min(340, window.innerWidth - 24);
+                const rightSpace = window.innerWidth - rect.right;
+                const right = Math.max(12, rightSpace);
+                const top = rect.bottom + 10;
+
+                if (window.innerWidth <= 760) {
+                    notificationPopup.style.left = "10px";
+                    notificationPopup.style.right = "10px";
+                    notificationPopup.style.width = "calc(100vw - 20px)";
+                } else {
+                    notificationPopup.style.left = "auto";
+                    notificationPopup.style.width = popupWidth + "px";
+                    notificationPopup.style.right = right + "px";
+                }
+
+                notificationPopup.style.top = top + "px";
+                notificationPopup.style.zIndex = "2147483647";
+            }
+
+            function openPopup() {
+                positionPopup();
+                notificationPopup.classList.remove("hidden");
+                notificationBtn.setAttribute("aria-expanded", "true");
+
+                fetch("{% url 'mark_notifications_read' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": getCSRFToken(),
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                })
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    if (data.success && notificationDot) {
+                        notificationDot.remove();
+                    }
+                })
+                .catch(function (error) {
+                    console.log("Notification read error:", error);
+                });
+            }
+
+            function closePopup() {
+                notificationPopup.classList.add("hidden");
+                notificationBtn.setAttribute("aria-expanded", "false");
+            }
+
+            notificationBtn.addEventListener("click", function (event) {
+                event.stopPropagation();
+
+                if (notificationPopup.classList.contains("hidden")) {
+                    openPopup();
+                } else {
+                    closePopup();
+                }
+            });
+
+            notificationPopup.addEventListener("click", function (event) {
+                event.stopPropagation();
+            });
+
+            window.addEventListener("resize", function () {
+                if (!notificationPopup.classList.contains("hidden")) {
+                    positionPopup();
+                }
+            });
+
+            window.addEventListener("scroll", function () {
+                if (!notificationPopup.classList.contains("hidden")) {
+                    positionPopup();
+                }
+            }, true);
+
+            document.addEventListener("click", closePopup);
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape") {
+                    closePopup();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

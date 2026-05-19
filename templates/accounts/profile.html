@@ -1,0 +1,475 @@
+{% extends "layouts/dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Profile | MindSpace{% endblock %}
+
+{% block content %}
+
+<div class="profile-page">
+
+    <div class="profile-card">
+
+        <!-- Cover -->
+        <div class="profile-cover"></div>
+
+        <!-- Header -->
+        <div class="profile-header">
+
+            <div class="profile-avatar-wrap">
+                <img
+                    src="{% static 'images/avatars/'|add:profile.avatar %}"
+                    alt="Profile avatar"
+                    class="profile-avatar"
+                >
+            </div>
+
+            <div class="profile-title">
+                <h1>
+                    {% if profile.first_name or profile.last_name %}
+                        {{ profile.first_name }} {{ profile.last_name }}
+                    {% elif request.user.first_name or request.user.last_name %}
+                        {{ request.user.first_name }} {{ request.user.last_name }}
+                    {% else %}
+                        {{ request.user.email }}
+                    {% endif %}
+                </h1>
+
+                <p>{{ request.user.email }}</p>
+
+                <span class="role-pill">
+                    {% if profile.role == "user" %}
+                        Patient
+                    {% elif profile.role == "counselor" %}
+                        Counselor
+                    {% elif profile.role == "admin" %}
+                        Admin
+                    {% else %}
+                        Member
+                    {% endif %}
+                </span>
+            </div>
+
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Profile Details -->
+        <div class="profile-details">
+
+            <div class="detail-card">
+                <span>First Name</span>
+                <strong>{{ profile.first_name|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card">
+                <span>Last Name</span>
+                <strong>{{ profile.last_name|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card">
+                <span>Email</span>
+                <strong>{{ request.user.email|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card">
+                <span>Alternate Email</span>
+                <strong>{{ profile.alternate_email|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card">
+                <span>Mobile Number</span>
+                <strong>{{ profile.mobile_number|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card">
+                <span>Gender</span>
+                <strong>{{ profile.get_gender_display|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card">
+                <span>Marital Status</span>
+                <strong>{{ profile.get_marital_status_display|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card">
+                <span>Age</span>
+                <strong>{{ profile.age|default:"Not added" }}</strong>
+            </div>
+
+            <!-- <div class="detail-card">
+                <span>Date of Birth</span>
+                <strong>
+                    {% if profile.date_of_birth %}
+                        {{ profile.date_of_birth|date:"d M Y" }}
+                    {% else %}
+                        Not added
+                    {% endif %}
+                </strong>
+            </div> -->
+
+            <div class="detail-card">
+                <span>Job / Work</span>
+                <strong>{{ profile.job|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card">
+                <span>Company Name</span>
+                <strong>{{ profile.company_name|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card">
+                <span>State</span>
+                <strong>{{ profile.state|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card">
+                <span>District</span>
+                <strong>{{ profile.district|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card">
+                <span>Pin Code</span>
+                <strong>{{ profile.pin_code|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card detail-full">
+                <span>Address</span>
+                <strong>{{ profile.address|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card detail-full">
+                <span>Family Members</span>
+                <strong>
+                    {% if profile.family_members %}
+                        {{ profile.family_members|join:", " }}
+                    {% else %}
+                        Not added
+                    {% endif %}
+                </strong>
+            </div>
+
+            <div class="detail-card">
+                <span>Consent Status</span>
+                <strong>
+                    {% if profile.consented %}
+                        Accepted
+                    {% else %}
+                        Not accepted
+                    {% endif %}
+                </strong>
+            </div>
+
+            <div class="detail-card">
+                <span>Consent Date</span>
+                <strong>
+                    {% if profile.consent_at %}
+                        {{ profile.consent_at|date:"d M Y, h:i A" }}
+                    {% else %}
+                        Not added
+                    {% endif %}
+                </strong>
+            </div>
+
+            <div class="detail-card">
+                <span>Account Status</span>
+                <strong>{{ profile.get_account_status_display|default:"Not added" }}</strong>
+            </div>
+
+            <div class="detail-card">
+                <span>Profile Completed</span>
+                <strong>
+                    {% if profile.is_profile_completed %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif %}
+                </strong>
+            </div>
+
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="danger-zone">
+            <div>
+                <h3>Delete Account</h3>
+                <p>
+                    Permanently delete your MindSpace account and related profile data.
+                    This action cannot be undone.
+                </p>
+            </div>
+
+            <a href="{% url 'delete_account' %}" class="delete-account-btn">
+                Delete Account
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+.profile-page {
+    min-height: calc(100vh - 40px);
+    padding: 40px 28px;
+    background: #f8fafc;
+}
+
+.profile-card {
+    max-width: 1050px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.07);
+    border: 1px solid #eef2f7;
+}
+
+.profile-cover {
+    height: 120px;
+    margin: 26px 26px 0;
+    border-radius: 18px;
+    background:
+        linear-gradient(90deg, rgba(147,197,253,.65), rgba(254,243,199,.65)),
+        radial-gradient(circle at 20% 40%, rgba(255,255,255,.65), transparent 30%);
+}
+
+.profile-header {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 22px;
+    align-items: center;
+    padding: 0 54px 34px;
+    margin-top: -42px;
+}
+
+.profile-avatar-wrap {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    padding: 5px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, .1);
+}
+
+.profile-avatar {
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.fallback-avatar {
+    background: #06b6d4;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 28px;
+}
+
+.profile-title h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+
+.profile-title p {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 5px;
+}
+
+.role-pill {
+    display: inline-flex;
+    margin-top: 9px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #ecfdf5;
+    color: #047857;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.messages {
+    padding: 0 54px 20px;
+}
+
+.message {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #ecfdf5;
+    color: #047857;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.message.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.profile-details {
+    padding: 0 54px 54px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.detail-card {
+    background: #f8fafc;
+    border: 1px solid #eef2f7;
+    border-radius: 16px;
+    padding: 18px 20px;
+    min-height: 82px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.detail-card span {
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.detail-card strong {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    word-break: break-word;
+}
+
+.detail-full {
+    grid-column: 1 / -1;
+}
+
+.danger-zone {
+    margin: 0 54px 54px;
+    padding: 22px;
+    border-radius: 18px;
+    border: 1px solid #fecaca;
+    background: #fff7f7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.danger-zone h3 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #991b1b;
+    margin-bottom: 6px;
+}
+
+.danger-zone p {
+    font-size: 13px;
+    color: #7f1d1d;
+    line-height: 1.5;
+}
+
+.delete-account-btn {
+    height: 42px;
+    padding: 0 20px;
+    border-radius: 12px;
+    background: #dc2626;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.delete-account-btn:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+    .profile-page {
+        padding: 28px 18px;
+    }
+
+    .profile-header {
+        padding: 0 30px 30px;
+    }
+
+    .profile-details {
+        padding: 0 30px 38px;
+        gap: 16px;
+    }
+
+    .messages {
+        padding: 0 30px 18px;
+    }
+
+    .danger-zone {
+        margin: 0 30px 38px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+    .profile-page {
+        padding: 18px 12px;
+    }
+
+    .profile-card {
+        border-radius: 18px;
+    }
+
+    .profile-cover {
+        height: 90px;
+        margin: 16px 16px 0;
+    }
+
+    .profile-header {
+        grid-template-columns: 1fr;
+        text-align: center;
+        justify-items: center;
+        padding: 0 20px 26px;
+        gap: 12px;
+    }
+
+    .profile-details {
+        grid-template-columns: 1fr;
+        padding: 0 20px 30px;
+    }
+
+    .detail-full {
+        grid-column: auto;
+    }
+
+    .messages {
+        padding: 0 20px 18px;
+    }
+
+    .danger-zone {
+        margin: 0 20px 30px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .delete-account-btn {
+        width: 100%;
+    }
+}
+</style>
+
+{% endblock %}

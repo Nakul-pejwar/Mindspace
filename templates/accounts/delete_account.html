@@ -1,0 +1,200 @@
+{% extends "layouts/dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Delete Account | MindSpace{% endblock %}
+
+{% block content %}
+
+<div class="delete-page">
+
+    <div class="delete-card">
+
+        <div class="delete-icon">
+            <span class="material-symbols-outlined">warning</span>
+        </div>
+
+        <h1>Delete your account?</h1>
+
+        <p>
+            This will permanently delete your MindSpace account, profile, consent records,
+            and related data linked to your user account.
+        </p>
+
+        <div class="warning-box">
+            <strong>This action cannot be undone.</strong>
+            <span>To confirm, type <b>DELETE</b> in the box below.</span>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <input
+                type="text"
+                name="confirm_delete"
+                placeholder="Type DELETE"
+                required
+            >
+
+            <div class="actions">
+                <a href="{% url 'profile' %}" class="cancel-btn">
+                    Cancel
+                </a>
+
+                <button type="submit" class="delete-btn">
+                    Permanently Delete
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+<style>
+.delete-page {
+    min-height: calc(100vh - 40px);
+    padding: 40px 24px;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-card {
+    width: min(100%, 560px);
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 34px;
+    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+    border: 1px solid #fee2e2;
+    text-align: center;
+}
+
+.delete-icon {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #fee2e2;
+    color: #dc2626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-icon span {
+    font-size: 34px;
+}
+
+.delete-card h1 {
+    font-size: 26px;
+    font-weight: 900;
+    color: #111827;
+    margin-bottom: 10px;
+}
+
+.delete-card p {
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.warning-box {
+    text-align: left;
+    padding: 16px;
+    border-radius: 16px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    margin-bottom: 20px;
+}
+
+.warning-box strong {
+    display: block;
+    color: #9a3412;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.warning-box span {
+    color: #7c2d12;
+    font-size: 13px;
+}
+
+.message {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #fee2e2;
+    color: #991b1b;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.delete-card input {
+    width: 100%;
+    height: 48px;
+    border-radius: 14px;
+    border: 1px solid #fecaca;
+    padding: 0 14px;
+    font-size: 14px;
+    outline: none;
+    margin-bottom: 18px;
+}
+
+.delete-card input:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+}
+
+.cancel-btn,
+.delete-btn {
+    flex: 1;
+    height: 46px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cancel-btn {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.delete-btn {
+    background: #dc2626;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: #b91c1c;
+}
+
+@media (max-width: 520px) {
+    .delete-card {
+        padding: 26px 20px;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+{% endblock %}

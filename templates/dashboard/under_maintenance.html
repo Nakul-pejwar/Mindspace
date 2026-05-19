@@ -1,0 +1,532 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Under Maintenance | MindSpace</title>
+
+  <style>
+    :root {
+      --brand-dark: #113a36;
+      --brand-mid: #2d5a45;
+      --brand-soft: #d7e4c9;
+      --text-dark: #10231f;
+      --text-muted: #66736d;
+      --white: #ffffff;
+      --card-bg: rgba(255, 255, 255, 0.92);
+    }
+
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      font-family: "Poppins", sans-serif;
+      color: var(--text-dark);
+      overflow-x: hidden;
+      background: #f5faf6;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    .maintenance-page {
+      min-height: 100vh;
+      width: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(14px, 2vw, 24px);
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(215, 228, 201, 0.65), transparent 28%),
+        linear-gradient(135deg, #0f3a34 0%, #193f38 42%, #f7faf6 42%, #ffffff 100%);
+    }
+
+    .maintenance-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.14;
+      filter: blur(2px);
+      z-index: 0;
+    }
+
+    .maintenance-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, rgba(17, 58, 54, 0.72), rgba(17, 58, 54, 0.18)),
+        radial-gradient(circle at 85% 15%, rgba(215, 228, 201, 0.35), transparent 28%);
+      z-index: 1;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      z-index: 2;
+      pointer-events: none;
+      animation: float 7s ease-in-out infinite;
+    }
+
+    .orb.one {
+      width: clamp(160px, 22vw, 300px);
+      height: clamp(160px, 22vw, 300px);
+      top: -90px;
+      right: -70px;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .orb.two {
+      width: clamp(120px, 18vw, 220px);
+      height: clamp(120px, 18vw, 220px);
+      bottom: -70px;
+      left: -55px;
+      background: rgba(215, 228, 201, 0.32);
+      animation-delay: 1.2s;
+    }
+
+    .orb.three {
+      width: 58px;
+      height: 58px;
+      top: 24%;
+      left: 17%;
+      background: rgba(17, 58, 54, 0.12);
+      animation-delay: 2s;
+    }
+
+    .maintenance-card {
+      position: relative;
+      z-index: 3;
+      width: min(92vw, 720px);
+      max-height: calc(100vh - 36px);
+      padding: clamp(22px, 4vh, 42px) clamp(22px, 4.5vw, 52px);
+      border-radius: clamp(22px, 3vw, 32px);
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(18px);
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .maintenance-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, rgba(215, 228, 201, 0.34), transparent 42%),
+        radial-gradient(circle at 92% 8%, rgba(45, 90, 69, 0.12), transparent 24%);
+      pointer-events: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: #edf5e8;
+      color: var(--brand-dark);
+      font-size: clamp(11px, 1.5vw, 13px);
+      font-weight: 700;
+      margin-bottom: clamp(14px, 2.4vh, 20px);
+      box-shadow: inset 0 0 0 1px rgba(17, 58, 54, 0.08);
+    }
+
+    .pulse-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--brand-mid);
+      animation: pulse 1.8s infinite;
+    }
+
+    .icon-wrap {
+      width: clamp(68px, 10vh, 92px);
+      height: clamp(68px, 10vh, 92px);
+      margin: 0 auto clamp(18px, 2.8vh, 24px);
+      border-radius: clamp(20px, 3vw, 28px);
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #113a36, #2d5a45);
+      box-shadow: 0 18px 38px rgba(17, 58, 54, 0.24);
+      animation: softTilt 4s ease-in-out infinite;
+    }
+
+    .icon-wrap svg {
+      width: 48%;
+      height: 48%;
+      stroke: white;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    h1 {
+      font-size: clamp(30px, 5vw, 54px);
+      line-height: 1.08;
+      font-weight: 800;
+      color: var(--text-dark);
+      letter-spacing: -1.4px;
+      margin-bottom: clamp(10px, 1.8vh, 16px);
+    }
+
+    .subtitle {
+      max-width: 560px;
+      margin: 0 auto;
+      font-size: clamp(13px, 1.6vw, 16px);
+      line-height: 1.65;
+      color: var(--text-muted);
+    }
+
+    .status-box {
+      margin: clamp(20px, 3vh, 30px) auto 0;
+      width: min(100%, 520px);
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 14px;
+      border-radius: 22px;
+      background: rgba(237, 245, 232, 0.75);
+      border: 1px solid rgba(17, 58, 54, 0.08);
+    }
+
+    .status-item {
+      min-height: 42px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.82);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid rgba(17, 58, 54, 0.05);
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .status-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      background: var(--brand-mid);
+      box-shadow: 0 0 0 5px rgba(45, 90, 69, 0.12);
+      flex: 0 0 auto;
+    }
+
+    .status-item strong {
+      font-size: 13px;
+      color: #3d4a45;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-item span {
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #e6eeee;
+      color: #24423a;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .actions {
+      margin-top: clamp(22px, 3.4vh, 32px);
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      min-width: 158px;
+      min-height: 44px;
+      padding: 0 22px;
+      border-radius: 999px;
+      border: none;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.25s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #113a36, #2d5a45);
+      color: white;
+      box-shadow: 0 12px 28px rgba(17, 58, 54, 0.22);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 34px rgba(17, 58, 54, 0.3);
+    }
+
+    .btn-light {
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--brand-dark);
+      border: 1px solid rgba(17, 58, 54, 0.13);
+    }
+
+    .btn-light:hover {
+      transform: translateY(-2px);
+      background: #f4faf2;
+    }
+
+    @keyframes float {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(16px);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(45, 90, 69, 0.45);
+      }
+
+      70% {
+        box-shadow: 0 0 0 11px rgba(45, 90, 69, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(45, 90, 69, 0);
+      }
+    }
+
+    @keyframes softTilt {
+      0%,
+      100% {
+        transform: rotate(-3deg) translateY(0);
+      }
+
+      50% {
+        transform: rotate(3deg) translateY(-5px);
+      }
+    }
+
+    @media (max-height: 760px) {
+      .maintenance-page {
+        align-items: flex-start;
+        padding-top: 24px;
+        padding-bottom: 24px;
+        overflow-y: auto;
+      }
+
+      .maintenance-card {
+        max-height: none;
+        padding: 22px 42px;
+      }
+
+      .brand-pill {
+        margin-bottom: 12px;
+      }
+
+      .icon-wrap {
+        width: 68px;
+        height: 68px;
+        margin-bottom: 14px;
+      }
+
+      h1 {
+        font-size: 38px;
+        margin-bottom: 10px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .status-box {
+        margin-top: 18px;
+        padding: 12px;
+      }
+
+      .actions {
+        margin-top: 20px;
+      }
+
+      .btn {
+        min-height: 42px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .maintenance-card {
+        width: min(94vw, 620px);
+        padding: 28px 24px;
+      }
+
+      h1 {
+        font-size: clamp(30px, 8vw, 42px);
+      }
+
+      .subtitle {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .maintenance-page {
+        padding: 14px;
+        align-items: center;
+      }
+
+      .maintenance-card {
+        width: 100%;
+        padding: 24px 18px;
+        border-radius: 22px;
+      }
+
+      .brand-pill {
+        font-size: 11px;
+      }
+
+      h1 {
+        font-size: 30px;
+        letter-spacing: -0.8px;
+      }
+
+      .subtitle {
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .status-box {
+        padding: 10px;
+      }
+
+      .status-item {
+        padding: 10px 11px;
+      }
+
+      .status-item strong {
+        font-size: 12px;
+      }
+
+      .status-item span {
+        font-size: 10px;
+      }
+
+      .actions {
+        gap: 10px;
+      }
+
+      .btn {
+        width: 100%;
+        min-width: 100%;
+      }
+    }
+  </style>
+  <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+</head>
+
+<body>
+
+  <main class="maintenance-page">
+
+    <img
+      class="maintenance-bg"
+      src="{% static 'images/signup_login_bg.png' %}"
+      alt=""
+      aria-hidden="true"
+    />
+
+    <div class="maintenance-overlay"></div>
+
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <section class="maintenance-card">
+      <div class="content">
+
+        <div class="brand-pill">
+          <span class="pulse-dot"></span>
+          MindSpace
+        </div>
+
+        <div class="icon-wrap" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <path d="M20 20L44 44" />
+            <path d="M44 20L20 44" />
+          </svg>
+        </div>
+
+        <h1>Page Under Maintenance</h1>
+
+        <p class="subtitle">
+          This MindSpace section is being improved right now. We are making it cleaner,
+          safer, and more useful before opening it for users.
+        </p>
+
+        <div class="status-box">
+          <div class="status-item">
+            <div class="status-left">
+              <div class="status-dot"></div>
+              <strong>Feature status</strong>
+            </div>
+            <span>In progress</span>
+          </div>
+
+          <div class="status-item">
+            <div class="status-left">
+              <div class="status-dot"></div>
+              <strong>Expected access</strong>
+            </div>
+            <span>Coming soon</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a href="{% url 'user_dashboard' %}" class="btn btn-primary">
+            Back to Dashboard
+          </a>
+
+          <a href="{% url 'check_in' %}" class="btn btn-light">
+            Go to Check-in
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,996 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Informed Consent | MindSpace</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --green: #047857;
+      --green-dark: #064e3b;
+      --green-soft: #ecfdf5;
+      --blue-soft: #eff6ff;
+      --red-soft: #fef2f2;
+      --red: #b91c1c;
+      --amber-soft: #fffbeb;
+      --amber: #92400e;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --card: #ffffff;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(16,185,129,.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(59,130,246,.10), transparent 30%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 68px;
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(226,232,240,.8);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+      font-size: 22px;
+      color: var(--green-dark);
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: var(--green-soft);
+      color: var(--green);
+      display: grid;
+      place-items: center;
+    }
+
+    .top-help {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto;
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .side-card {
+      position: sticky;
+      top: 92px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 18px 45px rgba(15,23,42,.06);
+      overflow: hidden;
+    }
+
+    .side-hero {
+      padding: 24px;
+      background:
+        linear-gradient(135deg, rgba(4,120,87,.95), rgba(6,78,59,.92)),
+        radial-gradient(circle at top right, rgba(255,255,255,.2), transparent 34%);
+      color: #ffffff;
+    }
+
+    .side-hero span {
+      display: inline-flex;
+      margin-bottom: 12px;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,.16);
+    }
+
+    .side-hero h1 {
+      font-family: 'Manrope', sans-serif;
+      font-size: 25px;
+      line-height: 1.15;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .side-hero p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: rgba(255,255,255,.84);
+    }
+
+    .side-content {
+      padding: 22px;
+    }
+
+    .notice-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .notice-item {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid #eef2f7;
+    }
+
+    .notice-item .material-symbols-outlined {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 20px;
+    }
+
+    .notice-item strong {
+      display: block;
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+
+    .notice-item small {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .emergency-box {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 16px;
+      background: var(--red-soft);
+      border: 1px solid #fecaca;
+    }
+
+    .emergency-box h3 {
+      font-size: 13px;
+      color: var(--red);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .emergency-box p {
+      font-size: 12px;
+      color: #7f1d1d;
+      line-height: 1.6;
+    }
+
+    .consent-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: 0 18px 45px rgba(15,23,42,.06);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 28px 34px 24px;
+      border-bottom: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(236,253,245,.75), rgba(255,255,255,1));
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .badge .material-symbols-outlined {
+      font-size: 17px;
+    }
+
+    .card-header h2 {
+      font-family: 'Manrope', sans-serif;
+      font-size: 30px;
+      line-height: 1.15;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .card-header p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 790px;
+    }
+
+    .content {
+      padding: 28px 34px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .section {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .section-head {
+      padding: 18px 20px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      background: var(--green-soft);
+      color: var(--green);
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .section-head h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .section-head p {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .section-body {
+      padding: 18px 20px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .warning {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: var(--amber-soft);
+      border: 1px solid #fde68a;
+      color: var(--amber);
+      font-size: 13px;
+      line-height: 1.6;
+      font-weight: 600;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .info-box {
+      padding: 14px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid #eef2f7;
+    }
+
+    .info-box strong {
+      display: block;
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .info-box p,
+    .info-box li {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    ul {
+      padding-left: 18px;
+    }
+
+    .consent-form {
+      padding: 0 34px 30px;
+    }
+
+    .consent-panel {
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: #f8fafc;
+      padding: 20px;
+    }
+
+    .consent-panel h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .consent-panel > p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .checkbox-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .check-row {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      background: #ffffff;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .check-row:hover {
+      border-color: rgba(4,120,87,.45);
+      transform: translateY(-1px);
+    }
+
+    .check-row input {
+      width: 19px;
+      height: 19px;
+      margin-top: 1px;
+      accent-color: var(--green);
+    }
+
+    .check-row strong {
+      display: block;
+      font-size: 13.5px;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+
+    .check-row small {
+      display: block;
+      font-size: 12.2px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .optional-label {
+      color: #2563eb;
+      font-weight: 800;
+      font-size: 11px;
+      margin-left: 6px;
+    }
+
+    .messages {
+      margin-bottom: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .message {
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      background: #ecfdf5;
+      color: var(--green-dark);
+      border: 1px solid #bbf7d0;
+    }
+
+    .message.error {
+      background: #fef2f2;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+
+    .signature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .field input {
+      height: 46px;
+      border-radius: 14px;
+      border: 1px solid #dbe3ee;
+      padding: 0 14px;
+      font-size: 14px;
+      outline: none;
+      background: #ffffff;
+    }
+
+    .field input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 4px rgba(16,185,129,.12);
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      min-height: 48px;
+      border-radius: 15px;
+      padding: 0 18px;
+      border: none;
+      font-family: 'Manrope', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: .2s ease;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: var(--green);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--green-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      width: 170px;
+      background: #ffffff;
+      color: #475569;
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #f1f5f9;
+    }
+
+    .footer-note {
+      padding: 16px 34px 26px;
+      border-top: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .footer-note strong {
+      color: var(--text);
+    }
+
+    @media (max-width: 980px) {
+      .main {
+        grid-template-columns: 1fr;
+      }
+
+      .side-card {
+        position: static;
+      }
+
+      .side-content {
+        display: none;
+      }
+
+      .side-hero {
+        padding: 20px 22px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        height: 62px;
+        padding: 0 16px;
+      }
+
+      .top-help span:last-child {
+        display: none;
+      }
+
+      .main {
+        width: min(100% - 20px, 1180px);
+        margin: 14px auto;
+        gap: 14px;
+      }
+
+      .card-header,
+      .content,
+      .consent-form,
+      .footer-note {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .card-header h2 {
+        font-size: 24px;
+      }
+
+      .info-grid,
+      .signature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .btn-secondary {
+        width: 100%;
+      }
+    }
+  </style>
+  <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+</head>
+
+<body>
+<div class="page">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon material-symbols-outlined">spa</span>
+      MindSpace
+    </div>
+
+    <div class="top-help">
+      <span class="material-symbols-outlined">verified_user</span>
+      <span>Informed Consent</span>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- LEFT SUMMARY -->
+    <aside class="side-card">
+      <div class="side-hero">
+        <span class="material-symbols-outlined">health_and_safety</span>
+        <h1>Your consent matters.</h1>
+        <p>
+          Please read this carefully before using MindSpace screening activities.
+          You can choose which data types you allow.
+        </p>
+      </div>
+
+      <div class="side-content">
+        <div class="notice-list">
+
+          <div class="notice-item">
+            <span class="material-symbols-outlined">stethoscope</span>
+            <div>
+              <strong>Not a diagnosis</strong>
+              <small>MindSpace is a screening support tool. It does not replace a doctor, counselor, or emergency service.</small>
+            </div>
+          </div>
+
+          <div class="notice-item">
+            <span class="material-symbols-outlined">lock</span>
+            <div>
+              <strong>Privacy-first</strong>
+              <small>Your data is used for screening and research validation with security safeguards.</small>
+            </div>
+          </div>
+
+          <div class="notice-item">
+            <span class="material-symbols-outlined">front_hand</span>
+            <div>
+              <strong>You can withdraw</strong>
+              <small>You may withdraw consent anytime without penalty.</small>
+            </div>
+          </div>
+
+          <div class="notice-item">
+            <span class="material-symbols-outlined">fact_check</span>
+            <div>
+              <strong>Module-wise consent</strong>
+              <small>Text, voice, and facial expression analysis are separate choices.</small>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="emergency-box">
+          <h3>Immediate distress?</h3>
+          <p>
+            National Mental Health Helpline: <strong>080-4611-0007</strong><br>
+            iCall: <strong>9152987821</strong><br>
+            Emergency Services: <strong>112</strong>
+          </p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONSENT -->
+    <section class="consent-card">
+
+      <div class="card-header">
+        <div class="badge">
+          <span class="material-symbols-outlined">gavel</span>
+          DPDP Act 2023 • Mental Healthcare Act 2017
+        </div>
+
+        <h2>AI-Based Mental Health Screening Informed Consent</h2>
+
+        <p>
+          MindSpace may analyse typed responses, voice recordings, and facial expression metrics
+          to identify patterns associated with mental health conditions such as stress, anxiety,
+          depression, and mood changes. This system is for screening support only.
+        </p>
+      </div>
+
+      <div class="content">
+
+        <!-- IMPORTANT NOTICE -->
+        <section class="section">
+          <div class="section-head">
+            <div class="section-icon">
+              <span class="material-symbols-outlined">warning</span>
+            </div>
+            <div>
+              <h3>Important Notice</h3>
+              <p>Please understand this before continuing.</p>
+            </div>
+          </div>
+
+          <div class="section-body">
+            <div class="warning">
+              MindSpace does <strong>not</strong> provide a medical diagnosis or treatment recommendation.
+              It only identifies acoustic, linguistic, and visual patterns. Any clinical action must be
+              reviewed by a qualified mental health professional.
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHTS -->
+        <section class="section">
+          <div class="section-head">
+            <div class="section-icon">
+              <span class="material-symbols-outlined">shield_person</span>
+            </div>
+            <div>
+              <h3>Your Rights</h3>
+              <p>You have control over your personal data and participation.</p>
+            </div>
+          </div>
+
+          <div class="section-body">
+            <div class="info-grid">
+              <div class="info-box">
+                <strong>Withdraw consent</strong>
+                <p>You may withdraw consent at any time without giving a reason and without penalty.</p>
+              </div>
+
+              <div class="info-box">
+                <strong>Access and correction</strong>
+                <p>You can request access to your data and ask for inaccurate information to be corrected.</p>
+              </div>
+
+              <div class="info-box">
+                <strong>Deletion request</strong>
+                <p>You can request deletion of your data. Requests should be processed according to applicable law.</p>
+              </div>
+
+              <div class="info-box">
+                <strong>Breach notice</strong>
+                <p>You should be informed if a data breach affects your personal information.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DATA USE -->
+        <section class="section">
+          <div class="section-head">
+            <div class="section-icon">
+              <span class="material-symbols-outlined">database</span>
+            </div>
+            <div>
+              <h3>How Your Data May Be Used</h3>
+              <p>Your data is used for screening, model validation, and research improvement.</p>
+            </div>
+          </div>
+
+          <div class="section-body">
+            <div class="info-grid">
+              <div class="info-box">
+                <strong>Allowed use</strong>
+                <ul>
+                  <li>AI model training and validation</li>
+                  <li>Mental health screening research</li>
+                  <li>Aggregated academic publication</li>
+                </ul>
+              </div>
+
+              <div class="info-box">
+                <strong>Not allowed</strong>
+                <ul>
+                  <li>No commercial advertising use</li>
+                  <li>No sale of personal health data</li>
+                  <li>No clinical diagnosis by AI alone</li>
+                </ul>
+              </div>
+
+              <div class="info-box">
+                <strong>Security</strong>
+                <p>Personal identifiers are separated where possible and data should be stored with encryption and access controls.</p>
+              </div>
+
+              <div class="info-box">
+                <strong>Retention</strong>
+                <p>Raw recordings should be deleted after processing according to your system policy. Anonymised features may be retained for research.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- MODULES -->
+        <section class="section">
+          <div class="section-head">
+            <div class="section-icon">
+              <span class="material-symbols-outlined">view_module</span>
+            </div>
+            <div>
+              <h3>Consent Modules</h3>
+              <p>You can allow one, two, or all three data-processing modules.</p>
+            </div>
+          </div>
+
+          <div class="section-body">
+            <div class="info-grid">
+              <div class="info-box">
+                <strong>Text Data</strong>
+                <p>Typed responses, questionnaire answers, and written reflections may be analysed for linguistic patterns and emotional tone.</p>
+              </div>
+
+              <div class="info-box">
+                <strong>Voice Data</strong>
+                <p>Audio recordings may be analysed for pitch, pace, rhythm, vocal energy, and acoustic features. This is not voice recognition.</p>
+              </div>
+
+              <div class="info-box">
+                <strong>Facial Expression Metrics</strong>
+                <p>Camera-based facial metrics may be analysed for expression dynamics. This is not facial recognition or identity tracking.</p>
+              </div>
+
+              <div class="info-box">
+                <strong>Optional Research Sharing</strong>
+                <p>Fully anonymised data may be shared for academic research only when you separately allow it.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section class="section">
+          <div class="section-head">
+            <div class="section-icon">
+              <span class="material-symbols-outlined">support_agent</span>
+            </div>
+            <div>
+              <h3>Grievance and Contact</h3>
+              <p>Contact the Data Protection Officer or project authority for privacy-related concerns.</p>
+            </div>
+          </div>
+
+          <div class="section-body">
+            <div class="info-grid">
+              <div class="info-box">
+                <strong>Data Protection Officer</strong>
+                <p>DPO Name: To be added<br>Email: dpo@example.in<br>Phone: To be added</p>
+              </div>
+
+              <div class="info-box">
+                <strong>Resolution Time</strong>
+                <p>Privacy and grievance requests should be handled within 30 days where applicable.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- FORM -->
+      <form method="POST" class="consent-form">
+        {% csrf_token %}
+
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="consent-panel">
+          <h3>Confirm Your Consent</h3>
+          <p>
+            Please select the modules you agree to. Required confirmations must be checked before continuing.
+          </p>
+
+          <div class="checkbox-list">
+
+            <label class="check-row">
+              <input type="checkbox" name="understand_screening" required>
+              <span>
+                <strong>I understand MindSpace is a screening tool, not a clinical diagnostic tool.</strong>
+                <small>I understand that results should be reviewed by a qualified mental health professional.</small>
+              </span>
+            </label>
+
+            <label class="check-row">
+              <input type="checkbox" name="understand_rights" required>
+              <span>
+                <strong>I understand my data rights.</strong>
+                <small>I can request access, correction, deletion, and withdraw consent according to applicable policy.</small>
+              </span>
+            </label>
+
+            <label class="check-row">
+              <input type="checkbox" name="consent_text" required>
+              <span>
+                <strong>I consent to Text Data collection and processing.</strong>
+                <small>Typed responses and questionnaire answers may be analysed for screening and validation.</small>
+              </span>
+            </label>
+
+            <label class="check-row">
+              <input type="checkbox" name="consent_voice" required>
+              <span>
+                <strong>I consent to Voice Data collection and processing.</strong>
+                <small>Voice recordings may be analysed for acoustic features. This is not voice recognition.</small>
+              </span>
+            </label>
+
+            <label class="check-row">
+              <input type="checkbox" name="consent_face" required>
+              <span>
+                <strong>I consent to Facial Expression Analysis.</strong>
+                <small>Facial expression metrics may be analysed. This is not facial recognition.</small>
+              </span>
+            </label>
+
+            <label class="check-row">
+              <input type="checkbox" name="consent_research_share">
+              <span>
+                <strong>
+                  I consent to anonymised academic research sharing.
+                  <span class="optional-label">Optional</span>
+                </strong>
+                <small>Declining this does not affect access to MindSpace screening.</small>
+              </span>
+            </label>
+
+          </div>
+
+          <div class="signature-grid">
+            <div class="field">
+              <label for="full_name">Full Name</label>
+              <input
+                id="full_name"
+                type="text"
+                name="full_name"
+                value="{{ request.user.get_full_name|default:request.user.email }}"
+                required
+              >
+            </div>
+
+            <div class="field">
+              <label for="signature">Digital Signature</label>
+              <input
+                id="signature"
+                type="text"
+                name="signature"
+                placeholder="Type your full name"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn-primary">
+              Agree and Continue
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <form method="post" action="{% url 'logout' %}" class="consent-form" style="padding-top:0;">
+        {% csrf_token %}
+        <button type="submit" class="btn-secondary" style="width:100%;">
+          Disagree and Logout
+        </button>
+      </form>
+
+      <div class="footer-note">
+        <strong>Version:</strong> 3.0 • DPDP Act 2023 Compliant • Ethics Approval: IEC/[Institution]/2024/MH-45<br>
+        This page should be reviewed by your professor, institution, or legal/ethics authority before real public deployment.
+      </div>
+
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

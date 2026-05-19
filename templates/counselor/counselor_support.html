@@ -1,0 +1,793 @@
+{% extends "layouts/dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Counselor Support | MindSpace{% endblock %}
+
+{% block content %}
+<div class="counselor-page">
+
+  <section class="support-hero">
+    <div class="hero-main">
+      <span class="page-badge">Human Support</span>
+      <h1>Counselor Support</h1>
+      <p>
+        If MindSpace cannot safely support a user through automated activities,
+        connect them with a qualified counselor or trusted support service.
+      </p>
+    </div>
+
+    <div class="hero-warning">
+      <span>⚠️</span>
+      <div>
+        <strong>Not a replacement for emergency care</strong>
+        <p>
+          MindSpace can support screening and referral, but serious risk needs human help immediately.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="quick-actions">
+    <a href="tel:8448440632" class="quick-card">
+      <span>📞</span>
+      <div>
+        <strong>Call Manodarpan</strong>
+        <small>8448440632</small>
+      </div>
+    </a>
+
+    <a href="mailto:manodarpan-mhrd@gov.in" class="quick-card">
+      <span>✉️</span>
+      <div>
+        <strong>Email Support</strong>
+        <small>manodarpan-mhrd@gov.in</small>
+      </div>
+    </a>
+
+    <a href="https://manodarpan.education.gov.in/" target="_blank" rel="noopener" class="quick-card">
+      <span>🌐</span>
+      <div>
+        <strong>Open Portal</strong>
+        <small>Manodarpan Website</small>
+      </div>
+    </a>
+  </section>
+
+  <div class="support-grid">
+
+    <section class="support-card">
+      <div class="section-title">
+        <span>🧑‍⚕️</span>
+        <div>
+          <h2>Available Counselors</h2>
+          <p>Use this section to connect the user with a human counselor.</p>
+        </div>
+      </div>
+
+      <div class="counselor-list">
+
+        <article class="counselor-item">
+          <div class="avatar">DR</div>
+          <div class="counselor-info">
+            <h3>Dr. Riya Sharma</h3>
+            <p>Clinical Psychologist</p>
+
+            <div class="meta">
+              <span>📍 Online / Nagpur</span>
+              <span>🕒 Mon-Sat, 10 AM - 6 PM</span>
+            </div>
+
+            <div class="actions">
+              <a href="tel:+919999999999">Call</a>
+              <a href="mailto:counselor@example.com">Email</a>
+              <button type="button">Refer User</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="counselor-item">
+          <div class="avatar">AC</div>
+          <div class="counselor-info">
+            <h3>Academic Counselor</h3>
+            <p>Student wellness and academic stress support</p>
+
+            <div class="meta">
+              <span>📍 College Support Cell</span>
+              <span>🕒 Working Hours</span>
+            </div>
+
+            <div class="actions">
+              <a href="tel:+918888888888">Call</a>
+              <a href="mailto:wellness@example.edu">Email</a>
+              <button type="button">Refer User</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="counselor-item">
+          <div class="avatar">MS</div>
+          <div class="counselor-info">
+            <h3>MindSpace Support Team</h3>
+            <p>Internal support team for first-level review and escalation.</p>
+
+            <div class="meta">
+              <span>📍 MindSpace Admin</span>
+              <span>🕒 Internal Review</span>
+            </div>
+
+            <div class="actions">
+              <a href="mailto:admin@mindspace.local">Email</a>
+              <button type="button">Create Case</button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <aside class="side-column">
+
+      <div class="manodarpan-card">
+        <span class="gov-badge">Government of India Initiative</span>
+        <h2>Manodarpan</h2>
+        <p>
+          Manodarpan provides psychosocial support and mental health assistance
+          for students, teachers, and parents.
+        </p>
+
+        <div class="helpline-box">
+          <small>National Helpline</small>
+          <strong>8448440632</strong>
+        </div>
+
+        <div class="manodarpan-actions">
+          <a href="tel:8448440632">Call Now</a>
+          <a href="https://manodarpan.education.gov.in/" target="_blank" rel="noopener">Visit Site</a>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>When to Refer</h3>
+        <ul>
+          <li>User needs human emotional support.</li>
+          <li>User asks to talk to a counselor.</li>
+          <li>User shows high stress or panic signs.</li>
+          <li>Automated activity result is unclear.</li>
+          <li>User cannot complete the activity properly.</li>
+        </ul>
+      </div>
+
+      <div class="danger-card">
+        <h3>Emergency Case</h3>
+        <p>
+          If the user may harm themselves or someone else, contact local emergency
+          services, guardian, institution authority, or nearby hospital immediately.
+        </p>
+      </div>
+
+    </aside>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+  --ms-card: #ffffff;
+  --ms-text: #0f172a;
+  --ms-muted: #64748b;
+  --ms-border: #e2e8f0;
+  --ms-green: #059669;
+  --ms-green-dark: #064e3b;
+  --ms-green-soft: #ecfdf5;
+  --ms-red-soft: #fef2f2;
+  --ms-yellow-soft: #fffbeb;
+}
+
+/* ==============================
+   Counselor Page Animations
+============================== */
+
+@keyframes msFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes msSoftScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes msFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes msPulseSoft {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.22);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(5, 150, 105, 0);
+  }
+}
+
+@keyframes msWarningPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+.support-hero {
+  animation: msFadeUp 0.45s ease forwards;
+}
+
+.hero-main {
+  animation: msSoftScale 0.45s ease forwards;
+}
+
+.hero-warning {
+  animation: msFadeUp 0.5s ease forwards;
+  animation-delay: 0.08s;
+  opacity: 0;
+}
+
+.hero-warning > span {
+  animation: msWarningPulse 1.8s ease-in-out infinite;
+}
+
+.page-badge,
+.gov-badge {
+  animation: msFadeUp 0.45s ease forwards;
+}
+
+.quick-card {
+  opacity: 0;
+  animation: msFadeUp 0.45s ease forwards;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+}
+
+.quick-card:nth-child(1) {
+  animation-delay: 0.12s;
+}
+
+.quick-card:nth-child(2) {
+  animation-delay: 0.18s;
+}
+
+.quick-card:nth-child(3) {
+  animation-delay: 0.24s;
+}
+
+.quick-card:hover {
+  transform: translateY(-3px);
+  border-color: #a7f3d0;
+  box-shadow: 0 14px 28px rgba(5, 150, 105, 0.10);
+  background: var(--ms-green-soft);
+}
+
+.quick-card span {
+  transition: transform 0.22s ease, background 0.22s ease;
+}
+
+.quick-card:hover span {
+  transform: scale(1.08);
+  background: #ffffff;
+}
+
+.support-card {
+  opacity: 0;
+  animation: msFadeUp 0.5s ease forwards;
+  animation-delay: 0.28s;
+}
+
+.counselor-item {
+  opacity: 0;
+  animation: msFadeUp 0.45s ease forwards;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+}
+
+.counselor-item:nth-child(1) {
+  animation-delay: 0.34s;
+}
+
+.counselor-item:nth-child(2) {
+  animation-delay: 0.42s;
+}
+
+.counselor-item:nth-child(3) {
+  animation-delay: 0.50s;
+}
+
+.counselor-item:hover {
+  transform: translateY(-3px);
+  background: #ffffff;
+  border-color: #a7f3d0;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.avatar {
+  animation: msPulseSoft 2.4s ease-in-out infinite;
+  transition: transform 0.22s ease;
+}
+
+.counselor-item:hover .avatar {
+  transform: scale(1.06);
+}
+
+.actions a,
+.actions button {
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.actions a:hover,
+.actions button:hover {
+  transform: translateY(-2px);
+  border-color: #a7f3d0;
+}
+
+.side-column > div {
+  opacity: 0;
+  animation: msFadeUp 0.45s ease forwards;
+}
+
+.side-column > div:nth-child(1) {
+  animation-delay: 0.34s;
+}
+
+.side-column > div:nth-child(2) {
+  animation-delay: 0.42s;
+}
+
+.side-column > div:nth-child(3) {
+  animation-delay: 0.50s;
+}
+
+.manodarpan-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.manodarpan-card::before {
+  content: "";
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  right: -45px;
+  top: -45px;
+  background: rgba(5, 150, 105, 0.10);
+  border-radius: 50%;
+  animation: msFloat 3.5s ease-in-out infinite;
+}
+
+.manodarpan-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+.helpline-box {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.helpline-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(5, 150, 105, 0.10);
+}
+
+.manodarpan-actions a {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.manodarpan-actions a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(6, 78, 59, 0.18);
+  background: var(--ms-green-dark);
+}
+
+.info-card li {
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+
+.info-card li:hover {
+  transform: translateX(3px);
+  color: var(--ms-green-dark);
+}
+
+.danger-card {
+  animation-name: msFadeUp;
+}
+
+.danger-card:hover {
+  border-color: #fca5a5;
+  box-shadow: 0 12px 24px rgba(153, 27, 27, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.counselor-page {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 18px 22px;
+  box-sizing: border-box;
+}
+
+.support-hero {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.hero-main,
+.hero-warning,
+.quick-card,
+.support-card,
+.manodarpan-card,
+.info-card,
+.danger-card {
+  background: var(--ms-card);
+  border: 1px solid var(--ms-border);
+  border-radius: 22px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+}
+
+.hero-main {
+  padding: 22px;
+}
+
+.page-badge {
+  display: inline-flex;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--ms-green-soft);
+  color: var(--ms-green-dark);
+  border: 1px solid #a7f3d0;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.hero-main h1 {
+  margin: 12px 0 8px;
+  color: var(--ms-green-dark);
+  font-size: 1.65rem;
+}
+
+.hero-main p,
+.hero-warning p {
+  margin: 0;
+  color: var(--ms-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.hero-warning {
+  padding: 18px;
+  display: flex;
+  gap: 12px;
+  background: var(--ms-yellow-soft);
+}
+
+.hero-warning span {
+  font-size: 1.5rem;
+}
+
+.hero-warning strong {
+  display: block;
+  color: #92400e;
+  margin-bottom: 5px;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.quick-card {
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.quick-card span {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+  background: var(--ms-green-soft);
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+}
+
+.quick-card strong {
+  display: block;
+  color: var(--ms-text);
+  font-size: 0.92rem;
+}
+
+.quick-card small {
+  color: var(--ms-muted);
+  font-size: 0.78rem;
+}
+
+.support-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.support-card,
+.manodarpan-card,
+.info-card,
+.danger-card {
+  padding: 18px;
+}
+
+.section-title {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.section-title > span {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+  background: var(--ms-green-soft);
+  display: grid;
+  place-items: center;
+}
+
+.section-title h2 {
+  margin: 0;
+  color: var(--ms-green-dark);
+  font-size: 1.15rem;
+}
+
+.section-title p {
+  margin: 4px 0 0;
+  color: var(--ms-muted);
+  font-size: 0.84rem;
+}
+
+.counselor-list {
+  display: grid;
+  gap: 13px;
+}
+
+.counselor-item {
+  display: flex;
+  gap: 13px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid var(--ms-border);
+  background: #f8fafc;
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  background: var(--ms-green);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  flex: 0 0 auto;
+}
+
+.counselor-info h3 {
+  margin: 0;
+  color: var(--ms-text);
+  font-size: 0.98rem;
+}
+
+.counselor-info p {
+  margin: 4px 0 10px;
+  color: var(--ms-muted);
+  font-size: 0.84rem;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 11px;
+}
+
+.meta span {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid var(--ms-border);
+  color: var(--ms-muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.actions a,
+.actions button {
+  border: 1px solid var(--ms-border);
+  background: #ffffff;
+  color: var(--ms-green-dark);
+  text-decoration: none;
+  padding: 8px 11px;
+  border-radius: 11px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.actions a:hover,
+.actions button:hover {
+  background: var(--ms-green-soft);
+}
+
+.side-column {
+  display: grid;
+  gap: 14px;
+}
+
+.manodarpan-card {
+  background: var(--ms-green-soft);
+  border-color: #a7f3d0;
+}
+
+.gov-badge {
+  display: inline-flex;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--ms-green-dark);
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.manodarpan-card h2,
+.info-card h3,
+.danger-card h3 {
+  margin: 0 0 8px;
+  color: var(--ms-green-dark);
+}
+
+.manodarpan-card p {
+  margin: 0;
+  color: var(--ms-green-dark);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.helpline-box {
+  margin-top: 14px;
+  padding: 13px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #a7f3d0;
+}
+
+.helpline-box small {
+  display: block;
+  color: var(--ms-muted);
+  font-size: 0.74rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.helpline-box strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--ms-green-dark);
+  font-size: 1.45rem;
+}
+
+.manodarpan-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.manodarpan-actions a {
+  text-align: center;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--ms-green);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.info-card ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ms-muted);
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+
+.danger-card {
+  background: var(--ms-red-soft);
+  border-color: #fecaca;
+}
+
+.danger-card h3,
+.danger-card p {
+  color: #991b1b;
+}
+
+.danger-card p {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  font-weight: 700;
+}
+
+@media (max-width: 1000px) {
+  .support-hero,
+  .support-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .counselor-page {
+    padding: 14px;
+  }
+
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .counselor-item {
+    flex-direction: column;
+  }
+
+  .manodarpan-actions {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+{% endblock %}

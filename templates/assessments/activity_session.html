@@ -1,0 +1,1036 @@
+{% extends "layouts/dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Face Video Activity | MindSpace{% endblock %}
+
+{% block content %}
+<div class="activity-container">
+
+  <div class="activity-layout">
+
+    <!-- LEFT PANEL: 10 RANDOM ACTIVITY CARDS -->
+    <div class="panel-left">
+      <div class="activity-stack-wrap">
+
+        <div class="stack-bg-card stack-bg-card-1"></div>
+        <div class="stack-bg-card stack-bg-card-2"></div>
+        <div class="stack-bg-card stack-bg-card-3"></div>
+
+        <div class="activity-info-card" id="activeActivityCard">
+          <div class="activity-top-row">
+            <span class="activity-badge" id="activityBadge">Activity</span>
+            <span class="random-pill">Random Task</span>
+          </div>
+
+          <h1 class="activity-title" id="activityTitle">Loading activity...</h1>
+
+          <p class="activity-description" id="activityDescription">
+            Please wait while MindSpace selects one activity for you.
+          </p>
+
+          <div class="prompt-box">
+            <span>Prompt</span>
+            <p id="activityPrompt">
+              Loading prompt...
+            </p>
+          </div>
+
+          <div class="instructions-section">
+            <h3>Instructions</h3>
+            <ol id="activityInstructions">
+              <li>Allow camera and microphone permission.</li>
+              <li>Record your answer clearly.</li>
+              <li>Submit the activity to continue.</li>
+            </ol>
+          </div>
+
+          <div class="mini-activity-list">
+            <div class="mini-title">Available activity pool</div>
+            <div class="mini-grid" id="miniActivityGrid"></div>
+          </div>
+
+          <div class="privacy-note">
+            Your recording is stored securely and used only for MindSpace assessment/support.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: ONLY ONE ACTIVITY PERFORMED -->
+    <div class="panel-right">
+      <div class="recording-card">
+
+        <div class="recording-header">
+          <div>
+            <span class="recording-label">Current task</span>
+            <h2 id="currentTaskTitle">Face Video Response</h2>
+          </div>
+          <span class="single-task-pill">Only 1 Activity</span>
+        </div>
+
+        <div class="video-area">
+          <video id="videoPreview" autoplay muted playsinline></video>
+
+          <div class="video-placeholder" id="videoPlaceholder">
+            <div class="camera-icon">🎥</div>
+            <p>Camera preview will appear here</p>
+            <small>Click Start Recording to begin</small>
+          </div>
+
+          <div class="recording-indicator" id="recordingIndicator">
+            <span></span> REC
+          </div>
+
+          <div class="recording-timer" id="recordingTimer">00:00</div>
+        </div>
+
+        <div class="status-line" id="statusLine">
+          Waiting to start
+        </div>
+
+        <div class="control-buttons">
+          <button type="button" class="btn btn-start" id="btnStart">
+            Start Recording
+          </button>
+
+          <button type="button" class="btn btn-stop" id="btnStop" disabled>
+            Stop Recording
+          </button>
+
+          <button type="button" class="btn btn-submit" id="btnSubmit" disabled>
+            Submit Activity
+          </button>
+        </div>
+
+        <div class="server-message" id="serverMessage"></div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<form id="csrfForm" style="display:none;">
+  {% csrf_token %}
+</form>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+  --ms-bg: #f4f8fb;
+  --ms-card: #ffffff;
+  --ms-text: #0f172a;
+  --ms-muted: #64748b;
+  --ms-border: #e2e8f0;
+  --ms-green: #059669;
+  --ms-green-dark: #064e3b;
+  --ms-green-soft: #ecfdf5;
+  --ms-red: #dc2626;
+  --ms-blue-soft: #eff6ff;
+  --ms-yellow-soft: #fffbeb;
+}
+
+.activity-container {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 18px 20px;
+  box-sizing: border-box;
+}
+
+.activity-layout {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+/* LEFT STACK */
+.activity-stack-wrap {
+  position: relative;
+  min-height: 560px;
+}
+
+.stack-bg-card {
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  background: #ffffff;
+  border: 1px solid var(--ms-border);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.06);
+  pointer-events: none;
+}
+
+.stack-bg-card-1 {
+  transform: rotate(-2.5deg) translate(-7px, 12px);
+  opacity: 0.52;
+}
+
+.stack-bg-card-2 {
+  transform: rotate(2.2deg) translate(8px, 20px);
+  opacity: 0.35;
+}
+
+.stack-bg-card-3 {
+  transform: rotate(-1deg) translate(2px, 30px);
+  opacity: 0.25;
+}
+
+.activity-info-card,
+.recording-card {
+  background: var(--ms-card);
+  border: 1px solid var(--ms-border);
+  border-radius: 22px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+}
+
+.activity-info-card {
+  position: relative;
+  z-index: 5;
+  padding: 20px;
+  min-height: 560px;
+  box-sizing: border-box;
+}
+
+.activity-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.activity-badge {
+  display: inline-flex;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--ms-green-soft);
+  color: var(--ms-green-dark);
+  border: 1px solid #a7f3d0;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.random-pill,
+.single-task-pill {
+  display: inline-flex;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: var(--ms-muted);
+  border: 1px solid var(--ms-border);
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.activity-title {
+  margin: 14px 0 8px;
+  color: var(--ms-green-dark);
+  font-size: 1.38rem;
+  line-height: 1.2;
+}
+
+.activity-description {
+  margin: 0;
+  color: var(--ms-muted);
+  line-height: 1.55;
+  font-size: 0.88rem;
+}
+
+.prompt-box {
+  margin-top: 15px;
+  padding: 13px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid var(--ms-border);
+  border-left: 4px solid var(--ms-green);
+}
+
+.prompt-box span {
+  display: block;
+  color: var(--ms-green-dark);
+  font-weight: 900;
+  font-size: 0.76rem;
+  margin-bottom: 6px;
+}
+
+.prompt-box p {
+  margin: 0;
+  color: var(--ms-muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.instructions-section {
+  margin-top: 15px;
+}
+
+.instructions-section h3 {
+  color: var(--ms-text);
+  font-size: 0.92rem;
+  margin: 0 0 8px;
+}
+
+.instructions-section ol {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ms-muted);
+  font-size: 0.84rem;
+  line-height: 1.65;
+}
+
+.mini-activity-list {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid var(--ms-border);
+}
+
+.mini-title {
+  color: var(--ms-text);
+  font-size: 0.78rem;
+  font-weight: 900;
+  margin-bottom: 9px;
+}
+
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 7px;
+}
+
+.mini-dot {
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid var(--ms-border);
+  background: #ffffff;
+  color: var(--ms-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-dot.active {
+  background: var(--ms-green);
+  color: #ffffff;
+  border-color: var(--ms-green);
+}
+
+.privacy-note {
+  margin-top: 15px;
+  padding: 11px;
+  border-radius: 14px;
+  background: var(--ms-green-soft);
+  color: var(--ms-green-dark);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+/* RIGHT CARD */
+.recording-card {
+  padding: 20px;
+}
+
+.recording-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.recording-label {
+  display: block;
+  color: var(--ms-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.recording-header h2 {
+  margin: 0;
+  color: var(--ms-green-dark);
+  font-size: 1.1rem;
+}
+
+.video-area {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0f172a;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#videoPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+#videoPreview.active {
+  display: block;
+}
+
+.video-placeholder {
+  text-align: center;
+  color: #94a3b8;
+}
+
+.video-placeholder.hidden {
+  display: none;
+}
+
+.camera-icon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.video-placeholder p {
+  margin: 0;
+  font-weight: 800;
+}
+
+.video-placeholder small {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+}
+
+.recording-indicator {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: none;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  background: rgba(220, 38, 38, 0.95);
+  color: #ffffff;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.recording-indicator.visible {
+  display: flex;
+}
+
+.recording-indicator span {
+  width: 8px;
+  height: 8px;
+  background: #ffffff;
+  border-radius: 999px;
+}
+
+.recording-timer {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 6px 12px;
+  background: rgba(15, 23, 42, 0.8);
+  color: #ffffff;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 900;
+}
+
+.status-line {
+  margin-top: 13px;
+  padding: 11px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid var(--ms-border);
+  color: var(--ms-muted);
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.control-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 13px;
+}
+
+.btn {
+  border: none;
+  border-radius: 14px;
+  padding: 11px 14px;
+  font-weight: 900;
+  cursor: pointer;
+  font-size: 0.86rem;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-start {
+  background: var(--ms-green);
+  color: #ffffff;
+}
+
+.btn-stop {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.btn-submit {
+  grid-column: 1 / -1;
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.server-message {
+  margin-top: 12px;
+  color: var(--ms-muted);
+  font-size: 0.84rem;
+  text-align: center;
+}
+
+.server-message.error {
+  color: #b91c1c;
+}
+
+.server-message.success {
+  color: var(--ms-green-dark);
+}
+
+@media (max-width: 1000px) {
+  .activity-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-stack-wrap,
+  .activity-info-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .activity-container {
+    padding: 14px;
+  }
+
+  .activity-info-card,
+  .recording-card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .mini-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .control-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-submit {
+    grid-column: auto;
+  }
+
+  .recording-header {
+    flex-direction: column;
+  }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  "use strict";
+
+  /*
+    Face activity duration rules:
+    - Minimum required: 150 seconds = 2 minutes 30 seconds.
+    - Auto-stop at 180 seconds = 3 minutes.
+    - Backend receives duration_seconds with the upload.
+  */
+  const FACE_MIN_SECONDS = 150;
+  const FACE_MAX_SECONDS = 180;
+
+  const activityPool = [
+    {
+      id: "mood_check",
+      badge: "Activity 1",
+      title: "Mood Check-In",
+      description: "Record a natural face-video response about your current emotional state.",
+      prompt: "How are you feeling right now? Speak naturally and keep your face visible.",
+      instructions: [
+        "Sit comfortably and keep your face visible.",
+        "Allow camera and microphone permission.",
+        "Record for at least 2 minutes 30 seconds.",
+        "Submit after your recording is ready."
+      ]
+    },
+    {
+      id: "daily_reflection",
+      badge: "Activity 2",
+      title: "Daily Reflection",
+      description: "Share a reflection about your day and your energy level.",
+      prompt: "Tell us one good thing and one difficult thing from your day.",
+      instructions: [
+        "Keep your face visible in the camera.",
+        "Speak clearly and naturally.",
+        "Record for at least 2 minutes 30 seconds.",
+        "Submit after your recording is ready."
+      ]
+    },
+    {
+      id: "stress_signal",
+      badge: "Activity 3",
+      title: "Stress Signal",
+      description: "This activity helps understand possible signs of stress through expression and voice.",
+      prompt: "What is something that made you feel stressed recently? Explain calmly.",
+      instructions: [
+        "Take one deep breath before starting.",
+        "Speak in your normal voice.",
+        "Record for at least 2 minutes 30 seconds.",
+        "Submit only after checking your recording is complete."
+      ]
+    },
+    {
+      id: "gratitude_moment",
+      badge: "Activity 4",
+      title: "Gratitude Moment",
+      description: "Talk about something positive to support emotional reflection.",
+      prompt: "Name one thing you are grateful for today and explain why.",
+      instructions: [
+        "Look toward the camera.",
+        "Speak calmly.",
+        "Record for at least 2 minutes 30 seconds.",
+        "Submit to move forward."
+      ]
+    },
+    {
+      id: "energy_level",
+      badge: "Activity 5",
+      title: "Energy Level",
+      description: "Share your current physical and mental energy level.",
+      prompt: "How much energy do you have today: low, medium, or high? Explain briefly.",
+      instructions: [
+        "Allow camera and microphone permission.",
+        "Keep your answer simple and clear.",
+        "Record for at least 2 minutes 30 seconds.",
+        "Submit when done."
+      ]
+    },
+    {
+      id: "sleep_reflection",
+      badge: "Activity 6",
+      title: "Sleep Reflection",
+      description: "Reflect on your recent sleep quality and how it affected your day.",
+      prompt: "How was your sleep last night, and how did it affect your mood today?",
+      instructions: [
+        "Sit in a quiet place.",
+        "Speak naturally.",
+        "Record for at least 2 minutes 30 seconds.",
+        "Submit the recording to continue."
+      ]
+    },
+    {
+      id: "focus_check",
+      badge: "Activity 7",
+      title: "Focus Check",
+      description: "Share how focused or distracted you feel right now.",
+      prompt: "Are you able to focus today, or are you feeling distracted? Explain shortly.",
+      instructions: [
+        "Keep your face inside the frame.",
+        "Use your normal speaking speed.",
+        "Record for at least 2 minutes 30 seconds.",
+        "Submit after completing the response."
+      ]
+    },
+    {
+      id: "calm_breath",
+      badge: "Activity 8",
+      title: "Calm Breathing Reflection",
+      description: "This activity checks calmness after a simple breathing moment.",
+      prompt: "Take a slow breath, then say how calm you feel right now.",
+      instructions: [
+        "Take one slow breath before speaking.",
+        "Do not force your voice.",
+        "Record for at least 2 minutes 30 seconds.",
+        "Submit to continue."
+      ]
+    },
+    {
+      id: "social_feeling",
+      badge: "Activity 9",
+      title: "Social Feeling",
+      description: "Reflect on your recent social comfort and connection.",
+      prompt: "Did you feel connected or isolated today? Share briefly.",
+      instructions: [
+        "Speak honestly.",
+        "Keep your answer meaningful.",
+        "Record for at least 2 minutes 30 seconds.",
+        "Submit when your answer is recorded."
+      ]
+    },
+    {
+      id: "self_support",
+      badge: "Activity 10",
+      title: "Self-Support Thought",
+      description: "Share one supportive thought for yourself.",
+      prompt: "Say one kind or supportive sentence you want to tell yourself today.",
+      instructions: [
+        "Look at the camera if comfortable.",
+        "Say your sentence clearly.",
+        "Record for at least 2 minutes 30 seconds.",
+        "Submit to go to the next page."
+      ]
+    }
+  ];
+
+  const activityBadge = document.getElementById("activityBadge");
+  const activityTitle = document.getElementById("activityTitle");
+  const activityDescription = document.getElementById("activityDescription");
+  const activityPrompt = document.getElementById("activityPrompt");
+  const activityInstructions = document.getElementById("activityInstructions");
+  const miniActivityGrid = document.getElementById("miniActivityGrid");
+  const currentTaskTitle = document.getElementById("currentTaskTitle");
+
+  const videoPreview = document.getElementById("videoPreview");
+  const videoPlaceholder = document.getElementById("videoPlaceholder");
+  const recordingIndicator = document.getElementById("recordingIndicator");
+  const recordingTimer = document.getElementById("recordingTimer");
+  const statusLine = document.getElementById("statusLine");
+  const serverMessage = document.getElementById("serverMessage");
+
+  const btnStart = document.getElementById("btnStart");
+  const btnStop = document.getElementById("btnStop");
+  const btnSubmit = document.getElementById("btnSubmit");
+
+  let selectedActivity = null;
+  let stream = null;
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let recordedBlob = null;
+
+  let startedAt = null;
+  let stoppedAt = null;
+  let finalDurationSeconds = 0;
+
+  let timerInterval = null;
+  let autoStopTimeout = null;
+
+  function pickRandomActivity() {
+    const randomIndex = Math.floor(Math.random() * activityPool.length);
+    selectedActivity = activityPool[randomIndex];
+
+    activityBadge.textContent = selectedActivity.badge;
+    activityTitle.textContent = selectedActivity.title;
+    activityDescription.textContent = selectedActivity.description;
+    activityPrompt.textContent = selectedActivity.prompt;
+    currentTaskTitle.textContent = selectedActivity.title;
+
+    activityInstructions.innerHTML = "";
+    selectedActivity.instructions.forEach(function (item) {
+      const li = document.createElement("li");
+      li.textContent = item;
+      activityInstructions.appendChild(li);
+    });
+
+    miniActivityGrid.innerHTML = "";
+    activityPool.forEach(function (activity, index) {
+      const dot = document.createElement("div");
+      dot.className = "mini-dot";
+      dot.textContent = index + 1;
+
+      if (activity.id === selectedActivity.id) {
+        dot.classList.add("active");
+        dot.title = "Selected: " + activity.title;
+      } else {
+        dot.title = activity.title;
+      }
+
+      miniActivityGrid.appendChild(dot);
+    });
+  }
+
+  function getCsrfToken() {
+    const input = document.querySelector("[name=csrfmiddlewaretoken]");
+    return input ? input.value : "";
+  }
+
+  function setStatus(text) {
+    statusLine.textContent = text;
+  }
+
+  function setMessage(text, type) {
+    serverMessage.textContent = text || "";
+    serverMessage.className = "server-message";
+    if (type) serverMessage.classList.add(type);
+  }
+
+  function formatTime(totalSeconds) {
+    const seconds = Math.max(0, Math.floor(totalSeconds || 0));
+    const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    return `${m}:${s}`;
+  }
+
+  function getCurrentRecordedSeconds() {
+    if (!startedAt) return 0;
+    const end = stoppedAt || Date.now();
+    return Math.floor((end - startedAt) / 1000);
+  }
+
+  function startTimer() {
+    startedAt = Date.now();
+    stoppedAt = null;
+    finalDurationSeconds = 0;
+
+    timerInterval = setInterval(function () {
+      const seconds = getCurrentRecordedSeconds();
+      recordingTimer.textContent = formatTime(seconds);
+
+      if (seconds < FACE_MIN_SECONDS) {
+        const remaining = FACE_MIN_SECONDS - seconds;
+        setStatus("Recording... " + formatTime(remaining) + " remaining.");
+      } else {
+        setStatus("Minimum duration reached. You can stop now.");
+      }
+    }, 500);
+  }
+
+  function stopTimer() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    stoppedAt = Date.now();
+    finalDurationSeconds = getCurrentRecordedSeconds();
+    recordingTimer.textContent = formatTime(finalDurationSeconds);
+  }
+
+  function cleanupStream() {
+    if (stream) {
+      stream.getTracks().forEach(function (track) {
+        track.stop();
+      });
+    }
+    stream = null;
+  }
+
+  function cleanupAutoStop() {
+    if (autoStopTimeout) {
+      clearTimeout(autoStopTimeout);
+      autoStopTimeout = null;
+    }
+  }
+
+  async function startRecording() {
+    setMessage("", "");
+    setStatus("Preparing camera...");
+
+    recordedChunks = [];
+    recordedBlob = null;
+    startedAt = null;
+    stoppedAt = null;
+    finalDurationSeconds = 0;
+    recordingTimer.textContent = "00:00";
+
+    btnStart.disabled = true;
+    btnStop.disabled = true;
+    btnSubmit.disabled = true;
+
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 854 },
+          height: { ideal: 480 },
+          frameRate: { ideal: 24, max: 30 }
+        },
+        audio: true
+      });
+
+      videoPreview.srcObject = stream;
+      videoPreview.classList.add("active");
+      videoPlaceholder.classList.add("hidden");
+
+      const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp8,opus")
+        ? "video/webm;codecs=vp8,opus"
+        : "video/webm";
+
+      mediaRecorder = new MediaRecorder(stream, {
+        mimeType: mimeType,
+        videoBitsPerSecond: 700000,
+        audioBitsPerSecond: 64000
+      });
+
+      mediaRecorder.ondataavailable = function (event) {
+        if (event.data && event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.onerror = function (event) {
+        setMessage("Recording error: " + (event.error ? event.error.message : "Unknown error"), "error");
+        setStatus("Recording error");
+        cleanupStream();
+        cleanupAutoStop();
+      };
+
+      mediaRecorder.onstop = function () {
+        stopTimer();
+        cleanupAutoStop();
+        cleanupStream();
+
+        recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
+
+        btnStart.disabled = false;
+        btnStop.disabled = true;
+        recordingIndicator.classList.remove("visible");
+
+        if (finalDurationSeconds < FACE_MIN_SECONDS) {
+          btnSubmit.disabled = true;
+          setMessage(
+            "Recording is too short. Required: " + formatTime(FACE_MIN_SECONDS) +
+            ". Recorded: " + formatTime(finalDurationSeconds) + ".",
+            "error"
+          );
+          setStatus("Please record again for at least " + formatTime(FACE_MIN_SECONDS) + ".");
+          return;
+        }
+
+        btnSubmit.disabled = false;
+        setMessage("Recording ready. Duration: " + formatTime(finalDurationSeconds) + ".", "success");
+        setStatus("Recording ready. Submit to continue.");
+      };
+
+      mediaRecorder.start(1000);
+      startTimer();
+
+      autoStopTimeout = setTimeout(function () {
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+          setMessage("Maximum recording time reached. Stopping automatically.", "");
+          mediaRecorder.stop();
+        }
+      }, FACE_MAX_SECONDS * 1000);
+
+      btnStop.disabled = false;
+      recordingIndicator.classList.add("visible");
+      setStatus("Recording in progress...");
+
+    } catch (error) {
+      btnStart.disabled = false;
+      btnStop.disabled = true;
+      btnSubmit.disabled = true;
+      cleanupStream();
+      cleanupAutoStop();
+      setMessage("Camera/microphone permission failed: " + error.message, "error");
+      setStatus("Permission failed");
+    }
+  }
+
+  function stopRecording() {
+    const seconds = getCurrentRecordedSeconds();
+
+    if (!mediaRecorder || mediaRecorder.state !== "recording") {
+      return;
+    }
+
+    if (seconds < FACE_MIN_SECONDS) {
+      const remaining = FACE_MIN_SECONDS - seconds;
+      setMessage("Please continue recording for " + formatTime(remaining) + " more.", "error");
+      return;
+    }
+
+    mediaRecorder.stop();
+    btnStop.disabled = true;
+    setStatus("Stopping recording...");
+  }
+
+  async function submitVideo() {
+    if (!recordedBlob) {
+      setMessage("Record the selected activity first.", "error");
+      return;
+    }
+
+    if (!selectedActivity) {
+      setMessage("Activity not selected. Refresh the page and try again.", "error");
+      return;
+    }
+
+    if (finalDurationSeconds < FACE_MIN_SECONDS) {
+      setMessage(
+        "Video is too short. Required: " + formatTime(FACE_MIN_SECONDS) +
+        ". Recorded: " + formatTime(finalDurationSeconds) + ".",
+        "error"
+      );
+      return;
+    }
+
+    btnSubmit.disabled = true;
+    btnStart.disabled = true;
+    btnStop.disabled = true;
+
+    setStatus("Uploading and processing selected activity...");
+    setMessage("Please wait. A 2:30 minute video can take time to upload and process.", "");
+
+    const formData = new FormData();
+    formData.append("video", recordedBlob, "face-video.webm");
+    formData.append("duration_seconds", String(finalDurationSeconds));
+
+    formData.append("activity_id", selectedActivity.id);
+    formData.append("activity_title", selectedActivity.title);
+    formData.append("activity_prompt", selectedActivity.prompt);
+
+    try {
+      const response = await fetch("{% url 'upload_face_video' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCsrfToken()
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Activity upload failed.");
+      }
+
+      setMessage("Activity completed. Moving to the next page...", "success");
+      setStatus("Completed");
+
+      setTimeout(function () {
+        window.location.href = data.redirect_url || "{% url 'voice_phonation' %}";
+      }, 900);
+
+    } catch (error) {
+      btnSubmit.disabled = false;
+      btnStart.disabled = false;
+      btnStop.disabled = true;
+      setMessage(error.message, "error");
+      setStatus("Upload failed");
+    }
+  }
+
+  pickRandomActivity();
+
+  btnStart.addEventListener("click", startRecording);
+  btnStop.addEventListener("click", stopRecording);
+  btnSubmit.addEventListener("click", submitVideo);
+})();
+</script>
+{% endblock %}

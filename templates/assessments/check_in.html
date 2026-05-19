@@ -1,0 +1,595 @@
+{% extends "layouts/dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Wellness Check-in | MindSpace{% endblock %}
+
+{% block content %}
+<div class="checkin-page">
+
+  <form method="POST"
+        action="{% url 'check_in' %}"
+        class="checkin-box"
+        id="checkinForm">
+    {% csrf_token %}
+
+    <div class="checkin-header">
+      <div>
+        <span class="checkin-badge">Wellness Check</span>
+        <h1>How are you feeling today?</h1>
+        <p>Select your current mood and share a short expression before starting the guided activities.</p>
+      </div>
+
+      <div class="privacy-pill">
+        <span></span>
+        Private
+      </div>
+    </div>
+
+    <div class="mood-section">
+      <div class="section-title">
+        <h2>Select mood</h2>
+        <small>Pick what feels closest right now.</small>
+      </div>
+
+      <div class="mood-grid">
+
+        <label class="mood-option">
+          <input type="radio" name="mood" value="happy" class="mood-input" required>
+          <div class="mood-card">
+            <span>😊</span>
+            <div>
+              <strong>Happy</strong>
+              <small>Positive and light</small>
+            </div>
+          </div>
+        </label>
+
+        <label class="mood-option">
+          <input type="radio" name="mood" value="calm" class="mood-input">
+          <div class="mood-card">
+            <span>😌</span>
+            <div>
+              <strong>Calm</strong>
+              <small>Balanced and steady</small>
+            </div>
+          </div>
+        </label>
+
+        <label class="mood-option">
+          <input type="radio" name="mood" value="sad" class="mood-input">
+          <div class="mood-card">
+            <span>😔</span>
+            <div>
+              <strong>Sad</strong>
+              <small>Low or heavy</small>
+            </div>
+          </div>
+        </label>
+
+        <label class="mood-option">
+          <input type="radio" name="mood" value="anxious" class="mood-input">
+          <div class="mood-card">
+            <span>😟</span>
+            <div>
+              <strong>Anxious</strong>
+              <small>Restless mind</small>
+            </div>
+          </div>
+        </label>
+
+        <label class="mood-option">
+          <input type="radio" name="mood" value="stressed" class="mood-input">
+          <div class="mood-card">
+            <span>😣</span>
+            <div>
+              <strong>Stressed</strong>
+              <small>Pressure or tension</small>
+            </div>
+          </div>
+        </label>
+
+        <label class="mood-option">
+          <input type="radio" name="mood" value="tired" class="mood-input">
+          <div class="mood-card">
+            <span>😴</span>
+            <div>
+              <strong>Tired</strong>
+              <small>Low energy</small>
+            </div>
+          </div>
+        </label>
+
+      </div>
+    </div>
+
+    <div class="bottom-row">
+
+      <div class="note-block">
+        <div class="note-top">
+          <label for="note">Your expression</label>
+          <small id="noteCounter">0 / 300</small>
+        </div>
+
+        <textarea id="note"
+                  name="note"
+                  maxlength="300"
+                  placeholder="Example: I feel nervous today because my mind is full of thoughts..."></textarea>
+      </div>
+
+      <div class="action-panel">
+        <div class="mini-info">
+          <strong>Next step</strong>
+          <p>MindSpace will begin your multimodal activity flow.</p>
+        </div>
+
+        <button type="submit" class="start-btn" id="submitBtn">
+          Start Activity
+          <span>→</span>
+        </button>
+      </div>
+
+    </div>
+
+  </form>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+  --ms-bg: #f4f8fb;
+  --ms-card: #ffffff;
+  --ms-text: #0f172a;
+  --ms-muted: #64748b;
+  --ms-light: #94a3b8;
+  --ms-border: #e2e8f0;
+  --ms-emerald: #059669;
+  --ms-emerald-dark: #064e3b;
+  --ms-emerald-soft: #ecfdf5;
+  --ms-emerald-border: #a7f3d0;
+}
+
+/* ==============================
+   Calm Check-in Animations
+============================== */
+
+@keyframes msFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes msSoftScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes msFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes msPulseDot {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(5, 150, 105, 0);
+  }
+}
+
+.checkin-box {
+  animation: msSoftScale 0.45s ease forwards;
+}
+
+.checkin-header {
+  animation: msFadeUp 0.45s ease forwards;
+}
+
+.mood-section {
+  animation: msFadeUp 0.5s ease forwards;
+  animation-delay: 0.08s;
+  opacity: 0;
+}
+
+.bottom-row {
+  animation: msFadeUp 0.5s ease forwards;
+  animation-delay: 0.16s;
+  opacity: 0;
+}
+
+.checkin-badge {
+  animation: msFadeUp 0.45s ease forwards;
+}
+
+.privacy-pill span {
+  animation: msPulseDot 1.8s ease-in-out infinite;
+}
+
+.mood-option {
+  opacity: 0;
+  animation: msFadeUp 0.45s ease forwards;
+}
+
+.mood-option:nth-child(1) { animation-delay: 0.10s; }
+.mood-option:nth-child(2) { animation-delay: 0.16s; }
+.mood-option:nth-child(3) { animation-delay: 0.22s; }
+.mood-option:nth-child(4) { animation-delay: 0.28s; }
+.mood-option:nth-child(5) { animation-delay: 0.34s; }
+.mood-option:nth-child(6) { animation-delay: 0.40s; }
+
+.mood-card:hover {
+  border-color: var(--ms-emerald-border);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+}
+
+.mood-card > span {
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.mood-option:hover .mood-card > span {
+  transform: scale(1.08);
+  background: var(--ms-emerald-soft);
+}
+
+.mood-input:checked + .mood-card {
+  transform: translateY(-2px);
+}
+
+.mood-input:checked + .mood-card > span {
+  animation: msFloat 1.4s ease-in-out infinite;
+}
+
+.note-block textarea {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.action-panel {
+  position: relative;
+  overflow: hidden;
+  animation: msFadeUp 0.5s ease forwards;
+  animation-delay: 0.22s;
+  opacity: 0;
+}
+
+.action-panel::before {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  top: -45px;
+  right: -35px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  animation: msFloat 3.5s ease-in-out infinite;
+}
+
+.start-btn {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(6, 78, 59, 0.22);
+}
+
+.start-btn span {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.start-btn:hover span {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+.checkin-page {
+  min-height: calc(100vh - 40px);
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px 28px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+.checkin-box {
+  width: 100%;
+  background: var(--ms-card);
+  border: 1px solid var(--ms-border);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+  box-sizing: border-box;
+}
+
+.checkin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.checkin-badge {
+  display: inline-flex;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--ms-emerald-soft);
+  color: var(--ms-emerald-dark);
+  border: 1px solid var(--ms-emerald-border);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.checkin-header h1 {
+  margin: 0;
+  color: var(--ms-emerald-dark);
+  font-size: clamp(1.45rem, 2vw, 2rem);
+  line-height: 1.1;
+}
+
+.checkin-header p {
+  margin: 7px 0 0;
+  color: var(--ms-muted);
+  font-size: 0.92rem;
+}
+
+.privacy-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid var(--ms-border);
+  color: var(--ms-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.privacy-pill span {
+  width: 8px;
+  height: 8px;
+  background: var(--ms-emerald);
+  border-radius: 50%;
+}
+
+.mood-section {
+  border-top: 1px solid var(--ms-border);
+  padding-top: 18px;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.section-title h2 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--ms-text);
+}
+
+.section-title small {
+  color: var(--ms-muted);
+  font-size: 0.8rem;
+}
+
+.mood-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.mood-option {
+  position: relative;
+  cursor: pointer;
+}
+
+.mood-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mood-card {
+  min-height: 74px;
+  border: 2px solid var(--ms-border);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #ffffff;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.mood-card > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #f8fafc;
+  font-size: 1.45rem;
+}
+
+.mood-card strong {
+  display: block;
+  color: var(--ms-text);
+  font-size: 0.9rem;
+  margin-bottom: 3px;
+}
+
+.mood-card small {
+  display: block;
+  color: var(--ms-muted);
+  font-size: 0.74rem;
+}
+
+.mood-option:hover .mood-card {
+  border-color: var(--ms-emerald-border);
+  transform: translateY(-1px);
+}
+
+.mood-input:checked + .mood-card {
+  border-color: var(--ms-emerald);
+  background: var(--ms-emerald-soft);
+  box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1);
+}
+
+.bottom-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(240px, 0.7fr);
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.note-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.note-top label {
+  color: var(--ms-text);
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.note-top small {
+  color: var(--ms-light);
+  font-size: 0.74rem;
+}
+
+.note-block textarea {
+  width: 100%;
+  height: 88px;
+  resize: none;
+  padding: 12px 14px;
+  border: 1.5px solid var(--ms-border);
+  border-radius: 16px;
+  background: #f8fafc;
+  color: var(--ms-text);
+  font-family: inherit;
+  font-size: 0.86rem;
+  box-sizing: border-box;
+}
+
+.note-block textarea:focus {
+  outline: none;
+  background: #ffffff;
+  border-color: var(--ms-emerald);
+  box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1);
+}
+
+.action-panel {
+  background: linear-gradient(145deg, #064e3b, #059669);
+  border-radius: 18px;
+  padding: 16px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mini-info strong {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.mini-info p {
+  margin: 0;
+  color: rgba(255,255,255,0.82);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.start-btn {
+  margin-top: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #ffffff;
+  color: #064e3b;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .checkin-page {
+    padding: 16px;
+    align-items: flex-start;
+  }
+
+  .checkin-header,
+  .section-title {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mood-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bottom-row {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  const note = document.getElementById("note");
+  const counter = document.getElementById("noteCounter");
+
+  if (note && counter) {
+    note.addEventListener("input", function () {
+      counter.textContent = `${note.value.length} / 300`;
+    });
+  }
+})();
+</script>
+{% endblock %}

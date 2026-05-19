@@ -1,0 +1,191 @@
+{% extends "layouts/dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Activity Complete | MindSpace{% endblock %}
+
+{% block content %}
+<div class="complete-page">
+  <div class="complete-card">
+
+    <span class="complete-badge">Completed</span>
+
+    <h1>MindSpace Activity Completed</h1>
+
+    <p>
+      Your face video, voice phonation, scenario voice response, and final multimodal analysis have been submitted successfully.
+      A counselor or admin can review the submitted activity data.
+    </p>
+
+    <div class="complete-summary">
+      <div>
+        <strong>1</strong>
+        <span>Face Video Saved</span>
+      </div>
+
+      <div>
+        <strong>2</strong>
+        <span>Voice Phonation Verified</span>
+      </div>
+
+      <div>
+        <strong>3</strong>
+        <span>Scenario Response Analyzed</span>
+      </div>
+
+      <div>
+        <strong>4</strong>
+        <span>Fusion Completed</span>
+      </div>
+    </div>
+
+    <div class="complete-actions">
+      <a href="{% url 'user_dashboard' %}" class="btn-primary">
+        Back to Dashboard
+      </a>
+
+      <a href="{% url 'check_in' %}" class="btn-secondary">
+        Start New Check-in
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.complete-page {
+  min-height: calc(100vh - 40px);
+  background: #f4f8fb;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.complete-card {
+  width: 100%;
+  max-width: 720px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+}
+
+.complete-badge {
+  display: inline-flex;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #064e3b;
+  border: 1px solid #a7f3d0;
+  font-weight: 900;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.complete-card h1 {
+  margin: 18px 0 10px;
+  color: #064e3b;
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.complete-card p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.complete-summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.complete-summary div {
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 16px;
+}
+
+.complete-summary strong {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #064e3b;
+  border: 1px solid #a7f3d0;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.complete-summary span {
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.complete-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 900;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background: #059669;
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background: #ecfdf5;
+  color: #064e3b;
+  border: 1px solid #a7f3d0;
+}
+
+@media (max-width: 640px) {
+  .complete-card {
+    padding: 24px;
+    border-radius: 20px;
+  }
+
+  .complete-card h1 {
+    font-size: 23px;
+  }
+
+  .complete-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .complete-actions {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,954 @@
+{% extends "layouts/dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Voice Phonation Activity | MindSpace{% endblock %}
+
+{% block content %}
+<div class="phonation-page">
+
+  <section class="phonation-card">
+
+    <div class="top-bar">
+      <div>
+        <span class="activity-badge">Activity 2</span>
+        <h1>Voice Phonation Activity</h1>
+        <p>Speak the shown Hindi sound clearly. Each sound is verified by voice strength, hold time, and backend transcript check.</p>
+      </div>
+
+      <div class="score-box">
+        <span>Completed</span>
+        <strong id="scoreText">0</strong>
+      </div>
+    </div>
+
+    <div class="game-layout">
+
+      <div class="target-panel">
+
+        <div class="mission-line">
+          <span id="missionText">Mission 1 of 28</span>
+          <strong id="streakText">Streak: 0</strong>
+        </div>
+
+        <div class="sound-arena">
+          <div class="hold-ring">
+            <svg viewBox="0 0 160 160">
+              <circle class="ring-bg" cx="80" cy="80" r="70"></circle>
+              <circle class="ring-progress" id="ringProgress" cx="80" cy="80" r="70"></circle>
+            </svg>
+
+            <div class="sound-letter" id="currentSound">क</div>
+          </div>
+        </div>
+
+        <div class="speak-prompt">
+          Speak:
+          <strong id="speakPrompt">का का का</strong>
+        </div>
+
+        <div class="status-box" id="statusBox">
+          Press Start Activity to begin.
+        </div>
+
+        <div class="recognized-box">
+          Heard locally:
+          <span id="recognizedText">—</span>
+        </div>
+
+      </div>
+
+      <div class="control-panel">
+
+        <div class="progress-block">
+          <div class="progress-top">
+            <span>Activity Progress</span>
+            <strong id="progressPercent">0%</strong>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="activityProgress"></div>
+          </div>
+        </div>
+
+        <div class="meter-block">
+          <div class="meter-top">
+            <span>Voice Strength</span>
+            <strong id="voicePercent">0%</strong>
+          </div>
+
+          <div class="voice-track">
+            <div class="threshold-marker"></div>
+            <div class="voice-fill" id="voiceFill"></div>
+          </div>
+
+          <small>Voice must stay above the marker. Background noise will not count.</small>
+        </div>
+
+        <div class="meter-block">
+          <div class="meter-top">
+            <span>Hold Time</span>
+            <strong id="holdPercent">0%</strong>
+          </div>
+
+          <div class="hold-track">
+            <div class="hold-fill" id="holdFill"></div>
+          </div>
+
+          <small>Hold for 1 second. Then submit the sound for backend verification.</small>
+        </div>
+
+        <div class="button-row">
+          <button type="button" class="btn start" id="startBtn">
+            Start Sound
+          </button>
+
+          <button type="button" class="btn stop" id="stopBtn" disabled>
+            Stop
+          </button>
+
+          <button type="button" class="btn submit" id="submitBtn" disabled>
+            Submit Sound
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="chips-panel">
+      <div class="chips-header">
+        <span>Sound Path</span>
+        <strong id="completedText">0 / 28 completed</strong>
+      </div>
+
+      <div class="sound-chips" id="soundChips"></div>
+    </div>
+
+    <form id="csrfForm" style="display:none;">
+      {% csrf_token %}
+    </form>
+
+  </section>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+  --ms-bg: #f4f8fb;
+  --ms-card: #ffffff;
+  --ms-text: #0f172a;
+  --ms-muted: #64748b;
+  --ms-soft: #94a3b8;
+  --ms-border: #e2e8f0;
+  --ms-green: #059669;
+  --ms-green-dark: #064e3b;
+  --ms-green-soft: #ecfdf5;
+  --ms-green-border: #a7f3d0;
+  --ms-red: #dc2626;
+  --ms-orange: #d97706;
+}
+
+.phonation-page {
+  min-height: calc(100vh - 40px);
+  width: 100%;
+  background: var(--ms-bg);
+  padding: 18px 24px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phonation-card {
+  width: 100%;
+  max-width: 1140px;
+  background: var(--ms-card);
+  border: 1px solid var(--ms-border);
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+  box-sizing: border-box;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.activity-badge {
+  display: inline-flex;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--ms-green-soft);
+  color: var(--ms-green-dark);
+  border: 1px solid var(--ms-green-border);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 9px;
+}
+
+.top-bar h1 {
+  margin: 0;
+  color: var(--ms-green-dark);
+  font-size: clamp(1.35rem, 2vw, 1.9rem);
+  line-height: 1.1;
+}
+
+.top-bar p {
+  margin: 7px 0 0;
+  color: var(--ms-muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.score-box {
+  min-width: 110px;
+  padding: 10px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--ms-border);
+  background: #f8fafc;
+  text-align: center;
+}
+
+.score-box span {
+  display: block;
+  color: var(--ms-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.score-box strong {
+  display: block;
+  color: var(--ms-green-dark);
+  font-size: 1.5rem;
+}
+
+.game-layout {
+  display: grid;
+  grid-template-columns: minmax(310px, 0.9fr) minmax(0, 1.35fr);
+  gap: 16px;
+}
+
+.target-panel,
+.control-panel {
+  border: 1px solid var(--ms-border);
+  border-radius: 22px;
+  background: #ffffff;
+}
+
+.target-panel {
+  min-height: 310px;
+  padding: 17px;
+  background: radial-gradient(circle at top, rgba(16, 185, 129, 0.12), transparent 42%), #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mission-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mission-line span,
+.mission-line strong {
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.mission-line span {
+  color: var(--ms-green-dark);
+}
+
+.mission-line strong {
+  color: var(--ms-muted);
+}
+
+.sound-arena {
+  display: grid;
+  place-items: center;
+  padding: 8px 0;
+}
+
+.hold-ring {
+  position: relative;
+  width: 158px;
+  height: 158px;
+}
+
+.hold-ring svg {
+  width: 158px;
+  height: 158px;
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 11;
+}
+
+.ring-progress {
+  fill: none;
+  stroke: var(--ms-green);
+  stroke-width: 11;
+  stroke-linecap: round;
+  stroke-dasharray: 440;
+  stroke-dashoffset: 440;
+  transition: stroke-dashoffset 0.08s linear;
+}
+
+.sound-letter {
+  position: absolute;
+  inset: 18px;
+  border-radius: 38px;
+  display: grid;
+  place-items: center;
+  background: var(--ms-green-soft);
+  border: 2px solid var(--ms-green-border);
+  color: var(--ms-green-dark);
+  font-size: 5rem;
+  font-weight: 900;
+}
+
+.sound-letter.listening {
+  transform: scale(1.03);
+  border-color: var(--ms-green);
+  box-shadow: 0 0 0 7px rgba(5, 150, 105, 0.10);
+}
+
+.sound-letter.success {
+  background: #d1fae5;
+  border-color: var(--ms-green);
+}
+
+.speak-prompt {
+  text-align: center;
+  color: var(--ms-muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.speak-prompt strong {
+  color: var(--ms-green-dark);
+  font-size: 1.2rem;
+}
+
+.status-box {
+  min-height: 40px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid var(--ms-border);
+  color: var(--ms-muted);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 9px 12px;
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.recognized-box {
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid var(--ms-border);
+  color: var(--ms-muted);
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.recognized-box span {
+  color: var(--ms-green-dark);
+}
+
+.control-panel {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 15px;
+}
+
+.progress-top,
+.meter-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.progress-top span,
+.meter-top span {
+  color: var(--ms-text);
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.progress-top strong,
+.meter-top strong {
+  color: var(--ms-green);
+  font-size: 0.8rem;
+}
+
+.progress-track,
+.voice-track,
+.hold-track {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background: #eef2f7;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.progress-fill,
+.voice-fill,
+.hold-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.08s linear;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, #6ee7b7, var(--ms-green));
+}
+
+.voice-fill {
+  background: linear-gradient(90deg, #93c5fd, #10b981, #064e3b);
+}
+
+.hold-fill {
+  background: linear-gradient(90deg, #fbbf24, #10b981);
+}
+
+.threshold-marker {
+  position: absolute;
+  left: 32%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--ms-red);
+  z-index: 2;
+}
+
+.meter-block small {
+  display: block;
+  margin-top: 6px;
+  color: var(--ms-soft);
+  font-size: 0.74rem;
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr 0.65fr 0.85fr;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.btn {
+  border: none;
+  border-radius: 15px;
+  padding: 13px 14px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn.start {
+  background: linear-gradient(135deg, var(--ms-green-dark), var(--ms-green));
+  color: #ffffff;
+}
+
+.btn.stop {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.btn.submit {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.chips-panel {
+  margin-top: 16px;
+  border-radius: 20px;
+  border: 1px solid var(--ms-border);
+  background: #f8fafc;
+  padding: 13px;
+}
+
+.chips-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 9px;
+}
+
+.chips-header span {
+  color: var(--ms-text);
+  font-size: 0.84rem;
+  font-weight: 900;
+}
+
+.chips-header strong {
+  color: var(--ms-muted);
+  font-size: 0.76rem;
+}
+
+.sound-chips {
+  display: grid;
+  grid-template-columns: repeat(14, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.sound-chip {
+  min-height: 30px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  border: 1px solid var(--ms-border);
+  color: var(--ms-muted);
+  font-size: 0.98rem;
+  font-weight: 900;
+}
+
+.sound-chip.current {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fbbf24;
+}
+
+.sound-chip.done {
+  background: var(--ms-green-soft);
+  color: var(--ms-green-dark);
+  border-color: var(--ms-green);
+}
+
+.sound-chip.failed {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+@media (max-width: 1100px) {
+  .phonation-page {
+    align-items: flex-start;
+    padding: 18px;
+  }
+
+  .game-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sound-chips {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .phonation-card {
+    padding: 16px;
+  }
+
+  .top-bar {
+    flex-direction: column;
+  }
+
+  .score-box {
+    width: 100%;
+  }
+
+  .button-row {
+    grid-template-columns: 1fr;
+  }
+
+  .sound-chips {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  "use strict";
+
+  const soundTasks = [
+    { label: "क", prompt: "का", say: "का का का", accepted: ["का", "क", "कह", "ka", "kaa"] },
+    { label: "ख", prompt: "खा", say: "खा खा खा", accepted: ["खा", "ख", "kha", "khaa"] },
+    { label: "ग", prompt: "गा", say: "गा गा गा", accepted: ["गा", "ग", "ga", "gaa"] },
+    { label: "घ", prompt: "घा", say: "घा घा घा", accepted: ["घा", "घ", "gha", "ghaa"] },
+    { label: "च", prompt: "चा", say: "चा चा चा", accepted: ["चा", "च", "cha", "chaa"] },
+    { label: "छ", prompt: "छा", say: "छा छा छा", accepted: ["छा", "छ", "chha", "chhaa"] },
+    { label: "ज", prompt: "जा", say: "जा जा जा", accepted: ["जा", "ज", "ja", "jaa"] },
+    { label: "झ", prompt: "झा", say: "झा झा झा", accepted: ["झा", "झ", "jha", "jhaa"] },
+    { label: "ट", prompt: "टा", say: "टा टा टा", accepted: ["टा", "ट", "ta", "taa"] },
+    { label: "ठ", prompt: "ठा", say: "ठा ठा ठा", accepted: ["ठा", "ठ", "tha", "thaa"] },
+    { label: "ड", prompt: "डा", say: "डा डा डा", accepted: ["डा", "ड", "da", "daa"] },
+    { label: "ढ", prompt: "ढा", say: "ढा ढा ढा", accepted: ["ढा", "ढ", "dha", "dhaa"] },
+    { label: "त", prompt: "ता", say: "ता ता ता", accepted: ["ता", "त", "ta", "taa"] },
+    { label: "थ", prompt: "था", say: "था था था", accepted: ["था", "थ", "tha", "thaa"] },
+    { label: "द", prompt: "दा", say: "दा दा दा", accepted: ["दा", "द", "da", "daa"] },
+    { label: "ध", prompt: "धा", say: "धा धा धा", accepted: ["धा", "ध", "dha", "dhaa"] },
+    { label: "प", prompt: "पा", say: "पा पा पा", accepted: ["पा", "प", "pa", "paa"] },
+    { label: "फ", prompt: "फा", say: "फा फा फा", accepted: ["फा", "फ", "fa", "faa", "pha", "phaa"] },
+    { label: "ब", prompt: "बा", say: "बा बा बा", accepted: ["बा", "ब", "ba", "baa"] },
+    { label: "भ", prompt: "भा", say: "भा भा भा", accepted: ["भा", "भ", "bha", "bhaa"] },
+    { label: "म", prompt: "मा", say: "मा मा मा", accepted: ["मा", "म", "ma", "maa"] },
+    { label: "य", prompt: "या", say: "या या या", accepted: ["या", "य", "ya", "yaa"] },
+    { label: "र", prompt: "रा", say: "रा रा रा", accepted: ["रा", "र", "ra", "raa"] },
+    { label: "ल", prompt: "ला", say: "ला ला ला", accepted: ["ला", "ल", "la", "laa"] },
+    { label: "व", prompt: "वा", say: "वा वा वा", accepted: ["वा", "व", "va", "vaa", "wa", "waa"] },
+    { label: "श", prompt: "शा", say: "शा शा शा", accepted: ["शा", "श", "sha", "shaa"] },
+    { label: "स", prompt: "सा", say: "सा सा सा", accepted: ["सा", "स", "sa", "saa"] },
+    { label: "ह", prompt: "हा", say: "हा हा हा", accepted: ["हा", "ह", "ha", "haa"] }
+  ];
+
+  const REQUIRED_HOLD_MS = 1000;
+  const VOICE_THRESHOLD = 32;
+
+  const currentSound = document.getElementById("currentSound");
+  const speakPrompt = document.getElementById("speakPrompt");
+  const missionText = document.getElementById("missionText");
+  const streakText = document.getElementById("streakText");
+  const scoreText = document.getElementById("scoreText");
+  const statusBox = document.getElementById("statusBox");
+  const recognizedText = document.getElementById("recognizedText");
+
+  const ringProgress = document.getElementById("ringProgress");
+  const voiceFill = document.getElementById("voiceFill");
+  const voicePercent = document.getElementById("voicePercent");
+  const holdFill = document.getElementById("holdFill");
+  const holdPercent = document.getElementById("holdPercent");
+  const activityProgress = document.getElementById("activityProgress");
+  const progressPercent = document.getElementById("progressPercent");
+
+  const soundChips = document.getElementById("soundChips");
+  const completedText = document.getElementById("completedText");
+
+  const startBtn = document.getElementById("startBtn");
+  const stopBtn = document.getElementById("stopBtn");
+  const submitBtn = document.getElementById("submitBtn");
+
+  let index = 0;
+  let completed = 0;
+  let streak = 0;
+
+  let stream = null;
+  let mediaRecorder = null;
+  let chunks = [];
+  let audioBlob = null;
+
+  let audioContext = null;
+  let analyser = null;
+  let dataArray = null;
+  let animationId = null;
+
+  let holdStart = null;
+  let holdMs = 0;
+  let maxVoice = 0;
+  let baselineNoise = 0;
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null;
+  let lastTranscript = "";
+
+  function csrfToken() {
+    const input = document.querySelector("[name=csrfmiddlewaretoken]");
+    return input ? input.value : "";
+  }
+
+  function task() {
+    return soundTasks[index];
+  }
+
+  function setStatus(text) {
+    statusBox.textContent = text;
+  }
+
+  function resetMeters() {
+    holdStart = null;
+    holdMs = 0;
+    maxVoice = 0;
+    audioBlob = null;
+    chunks = [];
+    lastTranscript = "";
+
+    voiceFill.style.width = "0%";
+    voicePercent.textContent = "0%";
+    holdFill.style.width = "0%";
+    holdPercent.textContent = "0%";
+    ringProgress.style.strokeDashoffset = "440";
+    recognizedText.textContent = "—";
+    currentSound.classList.remove("listening", "success");
+  }
+
+  function renderChips() {
+    soundChips.innerHTML = "";
+
+    soundTasks.forEach(function (item, i) {
+      const chip = document.createElement("div");
+      chip.className = "sound-chip";
+      chip.textContent = item.label;
+
+      if (i < index) chip.classList.add("done");
+      if (i === index) chip.classList.add("current");
+
+      soundChips.appendChild(chip);
+    });
+  }
+
+  function renderTask() {
+    const t = task();
+
+    missionText.textContent = `Mission ${index + 1} of ${soundTasks.length}`;
+    currentSound.textContent = t.label;
+    speakPrompt.textContent = t.say;
+    streakText.textContent = `Streak: ${streak}`;
+    scoreText.textContent = completed;
+
+    const progress = Math.round((completed / soundTasks.length) * 100);
+    activityProgress.style.width = `${progress}%`;
+    progressPercent.textContent = `${progress}%`;
+    completedText.textContent = `${completed} / ${soundTasks.length} completed`;
+
+    renderChips();
+    resetMeters();
+  }
+
+  function setupSpeechRecognition() {
+    if (!SpeechRecognition) return;
+
+    recognition = new SpeechRecognition();
+    recognition.lang = "hi-IN";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = function (event) {
+      let text = "";
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        text += event.results[i][0].transcript;
+      }
+
+      lastTranscript = text.trim();
+      recognizedText.textContent = lastTranscript || "—";
+    };
+
+    recognition.onerror = function () {};
+  }
+
+  async function startSound() {
+    resetMeters();
+    setStatus("Listening... speak the shown sound clearly.");
+
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    submitBtn.disabled = true;
+
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
+
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+
+      dataArray = new Uint8Array(analyser.fftSize);
+
+      mediaRecorder = new MediaRecorder(stream, {
+        mimeType: MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+          ? "audio/webm;codecs=opus"
+          : "audio/webm"
+      });
+
+      mediaRecorder.ondataavailable = function (event) {
+        if (event.data && event.data.size > 0) {
+          chunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = function () {
+        audioBlob = new Blob(chunks, { type: "audio/webm" });
+
+        if (holdMs >= REQUIRED_HOLD_MS) {
+          submitBtn.disabled = false;
+          currentSound.classList.add("success");
+          setStatus("Sound recorded. Submit for backend verification.");
+        } else {
+          submitBtn.disabled = true;
+          setStatus("Hold time too short. Try again.");
+        }
+      };
+
+      mediaRecorder.start();
+
+      if (recognition) {
+        try { recognition.start(); } catch (e) {}
+      }
+
+      monitorVoice();
+
+    } catch (error) {
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      setStatus("Microphone permission failed: " + error.message);
+    }
+  }
+
+  function monitorVoice() {
+    analyser.getByteTimeDomainData(dataArray);
+
+    let sum = 0;
+
+    for (let i = 0; i < dataArray.length; i++) {
+      const value = (dataArray[i] - 128) / 128;
+      sum += value * value;
+    }
+
+    const rms = Math.sqrt(sum / dataArray.length);
+    const percent = Math.min(100, Math.round(rms * 450));
+
+    maxVoice = Math.max(maxVoice, percent);
+
+    voiceFill.style.width = `${percent}%`;
+    voicePercent.textContent = `${percent}%`;
+
+    if (percent > VOICE_THRESHOLD) {
+      if (!holdStart) holdStart = Date.now();
+      holdMs = Date.now() - holdStart;
+      currentSound.classList.add("listening");
+    } else {
+      holdStart = null;
+      currentSound.classList.remove("listening");
+    }
+
+    const holdProgress = Math.min(100, Math.round((holdMs / REQUIRED_HOLD_MS) * 100));
+    holdFill.style.width = `${holdProgress}%`;
+    holdPercent.textContent = `${holdProgress}%`;
+
+    const dashOffset = 440 - (440 * holdProgress / 100);
+    ringProgress.style.strokeDashoffset = dashOffset;
+
+    if (holdProgress >= 100) {
+      setStatus("Good hold. Stop and submit this sound.");
+    }
+
+    animationId = requestAnimationFrame(monitorVoice);
+  }
+
+  function stopSound() {
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      mediaRecorder.stop();
+    }
+
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+
+    if (audioContext) {
+      audioContext.close();
+    }
+
+    if (recognition) {
+      try { recognition.stop(); } catch (e) {}
+    }
+
+    cancelAnimationFrame(animationId);
+
+    stopBtn.disabled = true;
+    startBtn.disabled = false;
+  }
+
+  async function submitSound() {
+    if (!audioBlob) {
+      setStatus("No audio found. Record again.");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    startBtn.disabled = true;
+    stopBtn.disabled = true;
+
+    setStatus("Uploading sound for backend verification...");
+
+    const t = task();
+
+    const formData = new FormData();
+    formData.append("audio", audioBlob, `phonation-${t.label}.webm`);
+    formData.append("expected_label", t.label);
+    formData.append("expected_prompt", t.prompt);
+    formData.append("accepted_values", JSON.stringify(t.accepted));
+    formData.append("volume_score", String(maxVoice));
+    formData.append("hold_ms", String(holdMs));
+    formData.append("baseline_noise_level", String(baselineNoise));
+
+    try {
+      const response = await fetch("{% url 'upload_voice_phonation' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken()
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok || data.passed === false) {
+        throw new Error(data.reason || data.error || "Sound verification failed.");
+      }
+
+      completed += 1;
+      streak += 1;
+      index += 1;
+
+      if (index >= soundTasks.length) {
+        setStatus("Voice phonation completed. Moving to scenario response...");
+        setTimeout(function () {
+          window.location.href = "{% url 'scenario_voice_response' %}";
+        }, 900);
+        return;
+      }
+
+      setStatus("Sound passed. Next mission ready.");
+      renderTask();
+
+      startBtn.disabled = false;
+
+    } catch (error) {
+      streak = 0;
+      setStatus(error.message + " Try again.");
+      startBtn.disabled = false;
+      submitBtn.disabled = true;
+      renderTask();
+    }
+  }
+
+  startBtn.addEventListener("click", startSound);
+  stopBtn.addEventListener("click", stopSound);
+  submitBtn.addEventListener("click", submitSound);
+
+  setupSpeechRecognition();
+  renderTask();
+})();
+</script>
+{% endblock %}

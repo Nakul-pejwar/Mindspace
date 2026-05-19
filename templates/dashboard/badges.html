@@ -1,0 +1,377 @@
+{% extends "layouts/dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Badges | MindSpace{% endblock %}
+
+{% block extra_css %}
+<style>
+    .badges-root {
+        --ms-card: #ffffff;
+        --ms-border: #e2e8f0;
+        --ms-text: #0f172a;
+        --ms-muted: #64748b;
+        --ms-green: #059669;
+        --ms-green-dark: #065f46;
+        --ms-green-soft: #ecfdf5;
+        --ms-green-border: #a7f3d0;
+        --ms-blue-soft: #eff6ff;
+        --ms-blue-border: #bfdbfe;
+        --ms-blue-text: #1d4ed8;
+        --ms-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 20px rgba(15, 23, 42, 0.05);
+
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 14px 16px;
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--ms-text);
+    }
+
+    .badges-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 16px;
+        margin-bottom: 12px;
+        border-radius: 22px;
+        color: #ffffff;
+        background:
+            linear-gradient(100deg, rgba(6,95,70,0.98), rgba(5,150,105,0.86), rgba(16,185,129,0.60)),
+            url("{% static 'images/dashboard-bg.png' %}");
+        background-size: cover;
+        background-position: center;
+        box-shadow: var(--ms-shadow);
+    }
+
+    .badges-header small {
+        display: block;
+        margin-bottom: 4px;
+        color: rgba(255,255,255,0.80);
+        font-size: 0.70rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .badges-header h1 {
+        margin: 0;
+        font-size: clamp(1.25rem, 2vw, 1.8rem);
+        line-height: 1.05;
+        font-weight: 950;
+    }
+
+    .badges-header p {
+        margin: 6px 0 0;
+        color: rgba(255,255,255,0.82);
+        font-size: 0.82rem;
+        line-height: 1.4;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 12px;
+        border-radius: 12px;
+        color: var(--ms-green-dark);
+        background: #ffffff;
+        text-decoration: none;
+        font-size: 0.76rem;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .summary-card,
+    .badge-card {
+        background: var(--ms-card);
+        border: 1px solid var(--ms-border);
+        border-radius: 18px;
+        box-shadow: var(--ms-shadow);
+    }
+
+    .summary-card {
+        padding: 13px;
+    }
+
+    .summary-card small {
+        color: var(--ms-muted);
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .summary-card strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 1.35rem;
+        font-weight: 950;
+    }
+
+    .section-title {
+        margin: 14px 0 9px;
+    }
+
+    .section-title h2 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 950;
+    }
+
+    .section-title p {
+        margin: 3px 0 0;
+        color: var(--ms-muted);
+        font-size: 0.78rem;
+    }
+
+    .badge-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .badge-card {
+        padding: 14px;
+    }
+
+    .badge-card.earned {
+        border-color: var(--ms-blue-border);
+        background: linear-gradient(145deg, #ffffff, var(--ms-blue-soft));
+    }
+
+    .badge-card.locked {
+        background: #f8fafc;
+        opacity: 0.88;
+    }
+
+    .badge-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 15px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 10px;
+        background: var(--ms-green-soft);
+        color: var(--ms-green);
+    }
+
+    .badge-card.locked .badge-icon {
+        background: #e2e8f0;
+        color: #64748b;
+    }
+
+    .badge-card h3 {
+        margin: 0;
+        font-size: 0.92rem;
+        font-weight: 950;
+    }
+
+    .badge-card p {
+        margin: 5px 0 10px;
+        color: var(--ms-muted);
+        font-size: 0.74rem;
+        line-height: 1.4;
+    }
+
+    .badge-rule {
+        padding: 9px;
+        border-radius: 12px;
+        border: 1px solid var(--ms-border);
+        background: #ffffff;
+    }
+
+    .badge-rule small {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--ms-muted);
+        font-size: 0.62rem;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .badge-rule span {
+        color: var(--ms-text);
+        font-size: 0.72rem;
+        font-weight: 850;
+    }
+
+    .progress-line {
+        height: 8px;
+        margin-top: 10px;
+        border-radius: 999px;
+        background: #e2e8f0;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        width: var(--badge-progress, 0%);
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--ms-green-dark), var(--ms-green));
+    }
+
+    @media (max-width: 900px) {
+        .summary-grid,
+        .badge-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 640px) {
+        .badges-header {
+            flex-direction: column;
+        }
+
+        .summary-grid,
+        .badge-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="badges-root">
+
+    <header class="badges-header">
+        <div>
+            <small>MindSpace Progress</small>
+            <h1>Your Badges</h1>
+            <p>Badges are small rewards for completing wellness activities regularly. They are not scores. They simply show progress.</p>
+        </div>
+
+        <a href="{% url 'user_dashboard' %}" class="back-link">
+            <span class="material-symbols-outlined text-sm">arrow_back</span>
+            Back to Dashboard
+        </a>
+    </header>
+
+    <section class="summary-grid">
+        <div class="summary-card">
+            <small>Earned</small>
+            <strong>{{ earned_badges_count|default:2 }}</strong>
+        </div>
+
+        <div class="summary-card">
+            <small>Locked</small>
+            <strong>{{ locked_badges_count|default:4 }}</strong>
+        </div>
+
+        <div class="summary-card">
+            <small>Current Streak</small>
+            <strong>{{ current_streak|default:3 }} days</strong>
+        </div>
+    </section>
+
+    <section>
+        <div class="section-title">
+            <h2>Earned Badges</h2>
+            <p>These badges are already unlocked.</p>
+        </div>
+
+        <div class="badge-grid">
+            <article class="badge-card earned">
+                <div class="badge-icon">
+                    <span class="material-symbols-outlined">verified</span>
+                </div>
+                <h3>First Check-in</h3>
+                <p>You completed your first wellness check.</p>
+                <div class="badge-rule">
+                    <small>How you got it</small>
+                    <span>Complete one wellness check-in.</span>
+                </div>
+            </article>
+
+            <article class="badge-card earned">
+                <div class="badge-icon">
+                    <span class="material-symbols-outlined">local_fire_department</span>
+                </div>
+                <h3>3-Day Streak</h3>
+                <p>You came back and completed activities for 3 days.</p>
+                <div class="badge-rule">
+                    <small>How you got it</small>
+                    <span>Complete one activity for 3 different days.</span>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section>
+        <div class="section-title">
+            <h2>Incomplete Badges</h2>
+            <p>These badges show what to do next.</p>
+        </div>
+
+        <div class="badge-grid">
+            <article class="badge-card locked">
+                <div class="badge-icon">
+                    <span class="material-symbols-outlined">lock</span>
+                </div>
+                <h3>7-Day Streak</h3>
+                <p>Build a full week habit.</p>
+                <div class="badge-rule">
+                    <small>How to unlock</small>
+                    <span>Complete one activity for 7 different days.</span>
+                </div>
+                <div class="progress-line">
+                    <div class="progress-fill" style="--badge-progress: {{ seven_day_streak_percent|default:43 }}%;"></div>
+                </div>
+            </article>
+
+            <article class="badge-card locked">
+                <div class="badge-icon">
+                    <span class="material-symbols-outlined">lock</span>
+                </div>
+                <h3>Voice Activity Badge</h3>
+                <p>Complete the voice-based wellness activity.</p>
+                <div class="badge-rule">
+                    <small>How to unlock</small>
+                    <span>Complete the voice activity once.</span>
+                </div>
+                <div class="progress-line">
+                    <div class="progress-fill" style="--badge-progress: {{ voice_badge_percent|default:0 }}%;"></div>
+                </div>
+            </article>
+
+            <article class="badge-card locked">
+                <div class="badge-icon">
+                    <span class="material-symbols-outlined">lock</span>
+                </div>
+                <h3>Weekly Consistency</h3>
+                <p>Complete multiple wellness checks in one week.</p>
+                <div class="badge-rule">
+                    <small>How to unlock</small>
+                    <span>Complete 5 wellness checks in a week.</span>
+                </div>
+                <div class="progress-line">
+                    <div class="progress-fill" style="--badge-progress: {{ weekly_consistency_percent|default:80 }}%;"></div>
+                </div>
+            </article>
+
+            <article class="badge-card locked">
+                <div class="badge-icon">
+                    <span class="material-symbols-outlined">lock</span>
+                </div>
+                <h3>Reflection Starter</h3>
+                <p>Use a short written expression in your check-in.</p>
+                <div class="badge-rule">
+                    <small>How to unlock</small>
+                    <span>Add a note in your wellness check-in 3 times.</span>
+                </div>
+                <div class="progress-line">
+                    <div class="progress-fill" style="--badge-progress: {{ reflection_badge_percent|default:33 }}%;"></div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
