@@ -24,7 +24,7 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.environ.get(
     "SECRET_KEY",
-    "django-insecure-dev-key-change-this-in-production"
+    ""
 )
 
 DEBUG = os.environ.get("DEBUG", "True") == "True"
@@ -124,7 +124,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ.get("DB_NAME", "mds"),
         "USER": os.environ.get("DB_USER", "mds_user"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "mds_password"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", ""),
         "HOST": os.environ.get("DB_HOST", "localhost"),
         "PORT": os.environ.get("DB_PORT", "5432"),
     }
